@@ -2,13 +2,14 @@ require_relative "figures"
 require 'ruby2d'
 
 class Pawn_white < Figures
+  attr_accessor :current_tile, :sprite, :first_move
 
   POSSIBLE_MOVES = [
     [1, 0]
   ].freeze
 
   POSSIBLE_FIRST_MOVES = [
-    [2, 0]
+    [1, 0], [2, 0]
   ].freeze
 
   POSSIBLE_TAKES = [
@@ -36,16 +37,22 @@ class Pawn_white < Figures
     @sprite.x = tile.draw_cords[:x]
     @sprite.y = tile.draw_cords[:y]
   end
+
+  def first_move?
+    @first_move
+  end
+
 end
 
-class Pawn_black
+class Pawn_black < Figures
+  attr_accessor :current_tile
 
   POSSIBLE_MOVES = [
     [-1, 0]
   ].freeze
 
   POSSIBLE_FIRST_MOVES = [
-    [-2, 0]
+    [-1, 0], [-2, 0]
   ].freeze
 
   POSSIBLE_TAKES = [
@@ -72,4 +79,9 @@ class Pawn_black
     @sprite.x = tile.draw_cords[:x]
     @sprite.y = tile.draw_cords[:y]
   end
+
+  def first_move?
+    @first_move
+  end
+
 end

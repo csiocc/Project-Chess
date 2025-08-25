@@ -1,4 +1,5 @@
-class Knight_white 
+class Knight_white < Figures
+  attr_accessor :current_tile 
   def initialize
     @sprite = Sprite.new(
       'img/knight-w.svg',
@@ -17,7 +18,8 @@ class Knight_white
 
 end
 
-class Knight_black
+class Knight_black < Figures
+  attr_accessor :current_tile
   def initialize
     @sprite = Sprite.new(
       'img/knight-b.svg',

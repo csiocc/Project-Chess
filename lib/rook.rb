@@ -1,5 +1,5 @@
-class Rook_white 
-
+class Rook_white < Figures
+  attr_accessor :current_tile
   POSSIBLE_MOVES = [
     [1, 0], [-1, 0],
     [0, 1], [0, -1]
@@ -24,7 +24,8 @@ class Rook_white
 
 end
 
-class Rook_black
+class Rook_black < Figures
+  attr_accessor :current_tile
   def initialize
     @sprite = Sprite.new(
       'img/rook-b.svg',

@@ -1,4 +1,5 @@
-class Bishop_white 
+class Bishop_white < Figures
+  attr_accessor :current_tile 
   def initialize
     @sprite = Sprite.new(
       'img/bishop-w.svg',
@@ -17,7 +18,8 @@ class Bishop_white
 
 end
 
-class Bishop_black
+class Bishop_black < Figures
+  attr_accessor :current_tile
   def initialize
     @sprite = Sprite.new(
       'img/bishop-b.svg',

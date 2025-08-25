@@ -13,4 +13,6 @@ set height: 1024
 
 test.setup_figures
 
+test.grid[1][1].figure.move(test.grid[2][1])
+
 show
