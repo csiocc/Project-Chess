@@ -1,5 +1,8 @@
+require_relative "figures"
+
 class Rook_white < Figures
   attr_accessor :current_tile, :sprite, :first_move
+  
   POSSIBLE_MOVES = [
     [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0],
     [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6], [0, 7],

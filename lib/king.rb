@@ -1,5 +1,18 @@
+require_relative "figures"
+
 class King_white < Figures
-  attr_accessor :current_tile, :sprite, :first_move 
+  attr_accessor :current_tile, :sprite, :first_move
+  
+  POSSIBLE_MOVES = [
+    [1, 0], [-1, 0], [0, 1], [0, -1],
+    [1, 1], [1, -1], [-1, 1], [-1, -1]
+  ].freeze
+
+  POSSIBLE_FIRST_MOVES = [
+    [2, 0],  # rochade (right, kingside)
+    [-2, 0]  # rochade (left, queenside)
+  ].freeze
+
   def initialize
     @sprite = Sprite.new(
       'img/king-w.svg',

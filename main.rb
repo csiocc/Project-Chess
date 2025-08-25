@@ -39,9 +39,11 @@ on :mouse_down do |event|
   when :select_target_tile #select target tile
     figure = @selected_tile.figure
     if figure.move_legal?(clickd_tile.cords, figure.class, figure)
-      figure.move(clickd_tile)
-      @selected_tile = nil
-      @game_state = :select_figure
+      if figure.move_line_clear?(clickd_tile.cords, test)
+        figure.move(clickd_tile)
+        @selected_tile = nil
+        @game_state = :select_figure
+      end
     else
       p "Bitte wähle einen legalen Move!"
     end
