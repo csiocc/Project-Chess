@@ -38,14 +38,10 @@ class Pawn_white < Figures
     @sprite.y = tile.draw_cords[:y]
   end
 
-  def first_move?
-    @first_move
-  end
-
 end
 
 class Pawn_black < Figures
-  attr_accessor :current_tile
+  attr_accessor :current_tile, :sprite, :first_move
 
   POSSIBLE_MOVES = [
     [-1, 0]

@@ -1,5 +1,5 @@
 class King_white < Figures
-  attr_accessor :current_tile 
+  attr_accessor :current_tile, :sprite, :first_move 
   def initialize
     @sprite = Sprite.new(
       'img/king-w.svg',
@@ -20,7 +20,7 @@ class King_white < Figures
 end
 
 class King_black < Figures
-  attr_accessor :current_tile
+  attr_accessor :current_tile, :sprite, :first_move
   def initialize
     @sprite = Sprite.new(
       'img/king-b.svg',

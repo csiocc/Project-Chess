@@ -1,15 +1,15 @@
 #class for all figures for shared functions
 DEBUG = false
 
-class Figures 
-  def move_legal?(cords, figure_class, figure = nil)
+class Figures
+  def move_legal?(cords, figure_class, figure)
     current_cords = @current_tile.cords
     dx = (cords[0] - current_cords[0])
     dy = (cords[1] - current_cords[1])
     move = [dx, dy]
     p "move = #{move}" if DEBUG
 
-    if figure.first_move?
+    if figure.first_move? && !figure_class::POSSIBLE_FIRST_MOVES.nil?
       if figure_class::POSSIBLE_FIRST_MOVES.include?(move)
         return true
       end
@@ -61,5 +61,8 @@ class Figures
     figure.sprite.y = target.draw_cords[:y]
   end
 
+  def first_move?
+    @first_move
+  end
 
 end

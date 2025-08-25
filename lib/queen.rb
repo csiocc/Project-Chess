@@ -1,5 +1,5 @@
 class Queen_white < Figures
-  attr_accessor :current_tile
+  attr_accessor :current_tile, :sprite, :first_move
   def initialize
     @sprite = Sprite.new(
       'img/queen-w.svg',
@@ -8,6 +8,7 @@ class Queen_white < Figures
       height: 128
     )
     @current_tile = nil
+    @first_move = true
   end
 
   def setup(tile)
@@ -19,7 +20,7 @@ class Queen_white < Figures
 end
 
 class Queen_black < Figures
-  attr_accessor :current_tile
+  attr_accessor :current_tile, :sprite, :first_move
   def initialize
     @sprite = Sprite.new(
       'img/queen-b.svg',
@@ -28,6 +29,7 @@ class Queen_black < Figures
       height: 128
     )
     @current_tile = nil
+    @first_move = true
   end
 
   def setup(tile)
