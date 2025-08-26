@@ -1,47 +1,41 @@
+require_relative "valid_moves_module"
 #class for all figures for shared functions
-DEBUG = false
+DEBUG = true
 
 class Figures
+  include Valid_moves
   attr_reader :color
-  def move_legal?(cords, figure_class, figure)
-    current_cords = @current_tile.cords
-    dx = (cords[0] - current_cords[0])
-    dy = (cords[1] - current_cords[1])
-    move = [dx, dy]
-    p "move = #{move}" if DEBUG
 
-    if figure.first_move? && !figure_class::POSSIBLE_FIRST_MOVES.nil?
-      if figure_class::POSSIBLE_FIRST_MOVES.include?(move)
-        return true
-      end
-    else
-      if figure_class::POSSIBLE_MOVES.include?(move)
-        p "#{figure_class::POSSIBLE_MOVES}" if DEBUG
-        return true
-      end
-    end
+  def valid_move?(cords)
+    valid_moves = []
+    current_cords = @current_tile.cords
+    valid_moves = Valid_moves.valid_moves(@current_tile.figure.class, current_cords)
+    p "Valid moves = #{valid_moves}" if DEBUG
+    p "Cords = #{cords}" if DEBUG
+    return true if valid_moves.include?(cords)
     false
   end
 
   def take_legal?(cords, figure_class, figure, board)
     current_cords = @current_tile.cords
-    dx = (cords[0] - current_cords[0])
-    dy = (cords[1] - current_cords[1])
-    move = [dx, dy]
-    p "move = #{move}" if DEBUG
-
-    if figure_class::POSSIBLE_TAKES.include?(move)
-      p "#{figure_class::POSSIBLE_TAKES}" if DEBUG
+    if Valid_moves.valid_takes(figure_class, current_cords).include?(cords)
       return true
     elsif figure_class == Pawn_white || figure_class == Pawn_black  #if pawn check for en_passant take
-      possibility_one = board.grid[(current_cords[0]), (current_cords[1] + 1)]
-      possibility_two = board.grid[current_cords[0],(current_cords[1] - 1)]
-      return false if possibility_one.class == Array || possibility_two.class == Array
-      if possibility_one.figure == Pawn_white || possibility_one.figure == Pawn_black
-        return true
-      elsif possibility_two.figure == Pawn_white || possibility_two.figure == Pawn_black
+      p "Valid takes = #{Valid_moves.valid_takes(figure_class, current_cords)}" if DEBUG
+      p "cords = #{cords}" if DEBUG
+      cords if DEBUG
+      if Valid_moves.valid_takes(figure_class, current_cords).include?(cords) 
+        possibility_one = board.grid[current_cords[0], (current_cords[1] + 1)]
+        possibility_two = board.grid[current_cords[0],(current_cords[1] - 1)]
+        if possibility_one.class == Array || possibility_two.class == Array
+          return false
+        elsif possibility_two.figure == Pawn_white || possibility_two.figure == Pawn_black
+          return true
+        end
         return true
       end
+    else
+      return true if valid_move?(cords)
     end
     false
   end
@@ -53,22 +47,8 @@ class Figures
     return true if self.is_a?(Knight_white) || self.is_a?(Knight_black)
     return true if self.is_a?(King_white) || self.is_a?(King_black)
     return true if self.is_a?(Pawn_white) || self.is_a?(Pawn_black)
-
-    dx = (target_cords[0] - current_cords[0]).clamp(-1, 1)
-    dy = (target_cords[1] - current_cords[1]).clamp(-1, 1)
-
-    check_x = current_cords[0] + dx
-    check_y = current_cords[1] + dy
-
-    # loop along the path but stop before the target tile
-    while [check_x, check_y] != target_cords
-      tile = board.grid[check_x][check_y]
-      return false unless tile.empty? # path is blocked
-
-      check_x += dx
-      check_y += dy
-    end
-    true # path is clear
+    return true if Valid_moves.los(current_cords, target_cords, board)
+    false
   end
 
   def en_passant?(cords)

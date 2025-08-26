@@ -10,11 +10,15 @@ set title: 'Chess press ESC to exit'
 set width: 1024
 set height: 1024
 
+include Valid_moves
+include Game_states
 test = Board.new
 test.setup
 test.draw_board
 test.setup_figures
-include Game_states
+Valid_moves.build_targets
+
+
 @game_state = :white_turn
 @highlight_square = nil #highlight square to highlight selected figure
 
@@ -72,7 +76,5 @@ on :mouse_down do |event|
   update_highlight
   
 end
-
-p Valid_moves.king([0, 4])
 
 show

@@ -1,25 +1,77 @@
 
 module Valid_moves
+  DEBUG = true
   @targets = {} # Hash for all possible moves
-  @positions = (0...8).flat_map do |r|
-    (0...8).map { |c| [r, c] }
-  end
+  @positions = nil
 
   def self.valid(positions)
     Array(positions).select do |r, c|
       (0...8).include?(r) && (0...8).include?(c)
     end
   end
+
+  def self.targets
+    @targets
+  end
+
+  def self.valid_moves(figure_class, current_cords)
+    if figure_class == King_white || figure_class == King_black
+      return @targets["king"][current_cords]
+    elsif figure_class == Rook_white || figure_class == Rook_black
+      return @targets["rook"][current_cords]
+    elsif figure_class == Bishop_white || figure_class == Bishop_black
+      return @targets["bishop"][current_cords]
+    elsif figure_class == Queen_white || figure_class == Queen_black
+      return @targets["queen"][current_cords]
+    elsif figure_class == Knight_white || figure_class == Knight_black
+      return @targets["knight"][current_cords]
+    elsif figure_class == Pawn_white
+      p "entered pawn white" if DEBUG
+      return @targets["wpawn"][current_cords]
+    elsif figure_class == Pawn_black
+      return @targets["bpawn"][current_cords]
+    else
+      p "else in valid moves" if DEBUG
+    []
+    end
+  end
+
+  def valid_takes(figure_class, current_cords)
+    if figure_class == Pawn_white
+      return @targets["wptake"][current_cords]
+    elsif figure_class == Pawn_black
+      return @targets["bptake"][current_cords]
+    else
+      return Valid_moves.valid_moves(figure_class, current_cords)
+    end
+  end
+
+  def valid_rochade(figure_class, current_cords)
+    if figure_class == King_white
+      return @targets["wcastle"][current_cords]
+    elsif figure_class == King_black
+      return @targets["bcastle"][current_cords]
+    end
+  end
+
+  def self.los(current, target, board) 
+    path = []
+    ["up","down","left","right","upleft","upright","downleft","downright"].each do |direction|
+      temp_path = @targets[direction][current] || []
+      if temp_path.include?(target) #geting path between current and target checks for direction
+        index = temp_path.index(target)
+        path = temp_path[0...index]
+        break
+      end
+    end
+    path.all? { |cords| board.grid[cords[0]][cords[1]].figure.nil? } # true, if all free 
+  end
   
-  def self.targets #getter method for other modules/classes
-    valid(@positions)
-  end
 
-  def self.king(cords)
-    @targets["king"][cords]
-  end
-
-  #generating hashes for all directions
+  def self.build_targets
+    @positions = (0...8).flat_map { |r| (0...8).map { |c| [r, c] } }
+    @targets = {}
+    #generating hashes for all directions
   @targets["up"] = @positions.to_h do |r, c|
     [[r, c], valid((1...8).map { |v| [r + v, c] })]
   end
@@ -143,6 +195,6 @@ module Valid_moves
   @targets["bcastle"] = Hash.new { |h, k| h[k] = [] }.merge({
     [7, 4] => [[7, 2], [7, 6]]
   })
-
-
+  end
+  
 end

@@ -33,7 +33,7 @@ module Game_states
     end
     figure = @selected_tile.figure
     if clickd_tile.empty? #if clicked outside of the board
-      if figure.move_legal?(clickd_tile.cords, figure.class, figure) #continue if move is legal
+      if figure.valid_move?(clickd_tile.cords) #continue if move is legal
         if figure.move_line_clear?(clickd_tile.cords, board) #continue if move line is clear
           if figure.first_move?
             if figure.class == Pawn_white || figure.class == Pawn_black #special rule for pawn en passant
@@ -101,7 +101,7 @@ module Game_states
     end
     figure = @selected_tile.figure
     if clickd_tile.empty? #if clicked outside of the board
-      if figure.move_legal?(clickd_tile.cords, figure.class, figure) #continue if move is legal
+      if figure.valid_move?(clickd_tile.cords) #continue if move is legal
         if figure.move_line_clear?(clickd_tile.cords, board) #continue if move line is clear
           if figure.first_move?
             if figure.class == Pawn_white || figure.class == Pawn_black #special rule for pawn en passant
