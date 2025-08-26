@@ -15,6 +15,7 @@ test.draw_board
 test.setup_figures
 include Game_states
 @game_state = :white_turn
+@highlight_square = nil #highlight square to highlight selected figure
 
 
 
@@ -29,6 +30,21 @@ on :key_down do |event|
     test.draw_board
     test.setup_figures
     @game_state = :white_turn
+  end
+end
+
+def update_highlight
+  selected_tile = Game_states.selected_tile #get tile to highlight
+
+  if selected_tile
+    unless @highlight_square #create highlight square if none existing
+      @highlight_square = Square.new(size: 128, color: [1, 1, 0, 0.4])
+    end
+    @highlight_square.x = selected_tile.draw_cords[:x] #highlight suqare positioning
+    @highlight_square.y = selected_tile.draw_cords[:y]
+    @highlight_square.add
+  elsif @highlight_square
+    @highlight_square.remove #if no tile selected remove highlight
   end
 end
 
@@ -50,6 +66,9 @@ on :mouse_down do |event|
       @game_state = Game_states.select_target_tile_black(clickd_tile, test)
       p "game state: #{@game_state}" if DEBUG
   end
+
+  # Nach jeder Aktion den Highlight-Status aktualisieren.
+  update_highlight
   
 end
 

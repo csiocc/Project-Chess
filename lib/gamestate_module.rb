@@ -2,6 +2,10 @@ module Game_states
   #Gamestate management
   @selected_tile = nil
 
+ 
+  def self.selected_tile #getter method for other modules/classes
+    @selected_tile
+  end
 # when :white_turn #select figure
   def select_figure_white(clickd_tile, board)
     if clickd_tile.class == Array #emergency return if clicked right between 2 Tiles
