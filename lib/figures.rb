@@ -81,7 +81,24 @@ class Figures
     end
     false
   end
-  
+
+
+
+
+
+  def create_en_passant_clone(target, board)
+    figure = @current_tile.figure
+    tile_to_set_clone_cords = []
+    if figure.class == Pawn_white
+      tile_to_set_clone_cords = [(target.cords[0] - 1), target.cords[1]]
+    elsif figure.class == Pawn_black
+      tile_to_set_clone_cords = [(target.cords[0] + 1), target.cords[1]]
+    end
+    tile_to_set_clone = board.grid[tile_to_set_clone_cords[0]][tile_to_set_clone_cords[1]] 
+    tile_to_set_clone.figure = @current_tile.figure
+    tile_to_set_clone.en_passant_clone = true
+  end
+
   def move(target, board)
     current_tile = @current_tile
     figure = @current_tile.figure
@@ -100,17 +117,7 @@ class Figures
     figure.sprite.y = target.draw_cords[:y]
   end
 
-  def create_en_passant_clone(target, board)
-    figure = @current_tile.figure
-    tile_to_set_clone_cords = []
-    if figure.class == Pawn_white
-      tile_to_set_clone_cords = [(target.cords[0] - 1), target.cords[1]]
-    elsif figure.class == Pawn_black
-      tile_to_set_clone_cords = [(target.cords[0] + 1), target.cords[1]]
-    end
-    tile_to_set_clone = board.grid[tile_to_set_clone_cords[0]][tile_to_set_clone_cords[1]] 
-    tile_to_set_clone.figure = @current_tile.figure
-  end
+
 
   def first_move?
     @first_move

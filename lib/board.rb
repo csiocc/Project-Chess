@@ -149,4 +149,27 @@ class Board
     end
     self.setup_figures
   end
+
+  def en_passant_reset_black
+    @grid.each do |row|
+      row.each do |tile|
+        if tile.en_passant_clone && tile.figure.color == "black"
+          tile.figure = nil
+          tile.en_passant_clone = false
+        end
+      end
+    end
+  end
+
+  def en_passant_reset_white
+    @grid.each do |row|
+      row.each do |tile|
+        if tile.en_passant_clone && tile.figure.color == "white"
+          tile.figure = nil
+          tile.en_passant_clone = false
+        end
+      end
+    end
+  end
+
 end

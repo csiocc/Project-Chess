@@ -48,11 +48,6 @@ module Game_states
             end
           else
             figure.move(clickd_tile, board)
-            if figure.class == Pawn_white || figure.class == Pawn_black #special rule for pawn en passant
-              figure.en_passant = false # disabling en passant after first move
-              @selected_tile = nil
-              return :black_turn
-            end 
             @selected_tile = nil
             return :black_turn
           end
@@ -121,13 +116,8 @@ module Game_states
             end
           else
             figure.move(clickd_tile, board)
-            if figure.class == Pawn_white || figure.class == Pawn_black #special rule for pawn en passant
-              figure.en_passant = false # disabling en passant after first move
-              @selected_tile = nil
-              return :white_turn
-            end 
-          @selected_tile = nil
-          return :white_turn
+            @selected_tile = nil
+            return :white_turn
           end
         else
           p "something is blocking your path!"
@@ -150,6 +140,14 @@ module Game_states
         return :select_target_tile_black
       end
     end
+  end
+
+  def reset_en_passant_white(board)
+    board.en_passant_reset_white
+  end
+
+  def reset_en_passant_black(board)
+    board.en_passant_reset_black
   end
 
 end

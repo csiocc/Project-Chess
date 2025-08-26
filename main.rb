@@ -59,15 +59,15 @@ on :mouse_down do |event|
     when :select_target_tile_white
       @game_state = Game_states.select_target_tile_white(clickd_tile, test)
       p "game state: #{@game_state}" if DEBUG
+      Game_states.reset_en_passant_black(test)
     when :black_turn
       @game_state = Game_states.select_figure_black(clickd_tile, test)
       p "game state: #{@game_state}" if DEBUG
     when :select_target_tile_black
       @game_state = Game_states.select_target_tile_black(clickd_tile, test)
       p "game state: #{@game_state}" if DEBUG
+      Game_states.reset_en_passant_white(test)
   end
-
-  # Nach jeder Aktion den Highlight-Status aktualisieren.
   update_highlight
   
 end
