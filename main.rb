@@ -1,5 +1,6 @@
 require_relative "lib/board"
 require_relative "lib/gamestate_module"
+require_relative "lib/valid_moves_module"
 require "ruby2d"
 DEBUG = false
 
@@ -71,5 +72,7 @@ on :mouse_down do |event|
   update_highlight
   
 end
+
+p Valid_moves.king([0, 4])
 
 show
