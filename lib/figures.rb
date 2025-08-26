@@ -23,7 +23,7 @@ class Figures
     false
   end
 
-  def take_legal?(cords, figure_class, figure)
+  def take_legal?(cords, figure_class, figure, board)
     current_cords = @current_tile.cords
     dx = (cords[0] - current_cords[0])
     dy = (cords[1] - current_cords[1])
@@ -31,8 +31,17 @@ class Figures
     p "move = #{move}" if DEBUG
 
     if figure_class::POSSIBLE_TAKES.include?(move)
-        p "#{figure_class::POSSIBLE_TAKES}" if DEBUG
+      p "#{figure_class::POSSIBLE_TAKES}" if DEBUG
+      return true
+    elsif figure_class == Pawn_white || figure_class == Pawn_black  #if pawn check for en_passant take
+      possibility_one = board.grid[(current_cords[0]), (current_cords[1] + 1)]
+      possibility_two = board.grid[current_cords[0],(current_cords[1] - 1)]
+      return false if possibility_one.class == Array || possibility_two.class == Array
+      if possibility_one.figure == Pawn_white || possibility_one.figure == Pawn_black
         return true
+      elsif possibility_two.figure == Pawn_white || possibility_two.figure == Pawn_black
+        return true
+      end
     end
     false
   end
@@ -62,9 +71,27 @@ class Figures
     true # path is clear
   end
 
-  def move(target)
+  def en_passant?(cords)
+    current_cords = @current_tile.cords
+    dx = (cords[0] - current_cords[0])
+    dy = (cords[1] - current_cords[1])
+    move = [dx, dy]
+    if move == [2, 0] || move == [-2, 0]
+      return true
+    end
+    false
+  end
+  
+  def move(target, board)
     current_tile = @current_tile
     figure = @current_tile.figure
+    if figure.class == Pawn_white || figure.class == Pawn_black
+      if figure.first_move?
+        if en_passant?(target.cords)
+          create_en_passant_clone(target, board)
+        end
+      end
+    end
     current_tile.figure = nil
     target.figure = figure
     figure.current_tile = target
@@ -73,6 +100,17 @@ class Figures
     figure.sprite.y = target.draw_cords[:y]
   end
 
+  def create_en_passant_clone(target, board)
+    figure = @current_tile.figure
+    tile_to_set_clone_cords = []
+    if figure.class == Pawn_white
+      tile_to_set_clone_cords = [(target.cords[0] - 1), target.cords[1]]
+    elsif figure.class == Pawn_black
+      tile_to_set_clone_cords = [(target.cords[0] + 1), target.cords[1]]
+    end
+    tile_to_set_clone = board.grid[tile_to_set_clone_cords[0]][tile_to_set_clone_cords[1]] 
+    tile_to_set_clone.figure = @current_tile.figure
+  end
 
   def first_move?
     @first_move
@@ -88,7 +126,7 @@ class Figures
   def take(target, board)
     figure = @current_tile.figure
     current_tile = @current_tile
-    if take_legal?(target.cords, figure.class, figure)
+    if take_legal?(target.cords, figure.class, figure, board)
       current_tile.figure = nil
       target_figure = target.figure
       target_figure.remove(board)

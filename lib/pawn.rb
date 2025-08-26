@@ -2,7 +2,7 @@ require_relative "figures"
 require 'ruby2d'
 
 class Pawn_white < Figures
-  attr_accessor :current_tile, :sprite, :first_move
+  attr_accessor :current_tile, :sprite, :first_move, :en_passant
 
   POSSIBLE_MOVES = [
     [1, 0]
@@ -26,6 +26,7 @@ class Pawn_white < Figures
     @current_tile = nil
     @first_move = true
     @color = "white"
+    @en_passant = false
   end
 
   def setup(tile)
@@ -37,7 +38,7 @@ class Pawn_white < Figures
 end
 
 class Pawn_black < Figures
-  attr_accessor :current_tile, :sprite, :first_move
+  attr_accessor :current_tile, :sprite, :first_move, :en_passant
 
   POSSIBLE_MOVES = [
     [-1, 0]
@@ -61,16 +62,13 @@ class Pawn_black < Figures
     @current_tile = nil
     @first_move = true
     @color = "black"
+    @en_passant = false
   end
 
   def setup(tile)
     @current_tile = tile
     @sprite.x = tile.draw_cords[:x]
     @sprite.y = tile.draw_cords[:y]
-  end
-
-  def first_move?
-    @first_move
   end
 
 end

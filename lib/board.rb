@@ -143,5 +143,10 @@ class Board
     end
   end
 
-
+  def reset
+    @figures.each do |figure|
+      figure.sprite.remove
+    end
+    self.setup_figures
+  end
 end
