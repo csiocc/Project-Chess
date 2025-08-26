@@ -13,6 +13,8 @@ class King_white < Figures
     [-2, 0]  # rochade (left, queenside)
   ].freeze
 
+  POSSIBLE_TAKES = POSSIBLE_MOVES
+
   def initialize
     @sprite = Sprite.new(
       'img/king-w.svg',
@@ -22,6 +24,7 @@ class King_white < Figures
     )
     @current_tile = nil
     @first_move = true
+    @color = "white"
   end
 
   def setup(tile)
@@ -34,6 +37,19 @@ end
 
 class King_black < Figures
   attr_accessor :current_tile, :sprite, :first_move
+
+  POSSIBLE_MOVES = [
+    [1, 0], [-1, 0], [0, 1], [0, -1],
+    [1, 1], [1, -1], [-1, 1], [-1, -1]
+  ].freeze
+
+  POSSIBLE_FIRST_MOVES = [
+    [2, 0],  # rochade (right, kingside)
+    [-2, 0]  # rochade (left, queenside)
+  ].freeze
+
+  POSSIBLE_TAKES = POSSIBLE_MOVES
+  
   def initialize
     @sprite = Sprite.new(
       'img/king-b.svg',
@@ -43,6 +59,7 @@ class King_black < Figures
     )
     @current_tile = nil
     @first_move = true
+    @color = "black"
   end
 
   def setup(tile)

@@ -17,6 +17,7 @@ class Queen_white < Figures
   ].freeze
 
   POSSIBLE_FIRST_MOVES = nil
+  POSSIBLE_TAKES = POSSIBLE_MOVES
 
   def initialize
     @sprite = Sprite.new(
@@ -27,6 +28,7 @@ class Queen_white < Figures
     )
     @current_tile = nil
     @first_move = true
+    @color = "white"
   end
 
   def setup(tile)
@@ -39,6 +41,24 @@ end
 
 class Queen_black < Figures
   attr_accessor :current_tile, :sprite, :first_move
+
+  POSSIBLE_MOVES = [
+  # straight
+  [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0],
+  [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6], [0, 7],
+  [-1, 0], [-2, 0], [-3, 0], [-4, 0], [-5, 0], [-6, 0], [-7, 0],
+  [0, -1], [0, -2], [0, -3], [0, -4], [0, -5], [0, -6], [0, -7],
+
+  # diagonal
+  [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7],
+  [-1, 1], [-2, 2], [-3, 3], [-4, 4], [-5, 5], [-6, 6], [-7, 7],
+  [1, -1], [2, -2], [3, -3], [4, -4], [5, -5], [6, -6], [7, -7],
+  [-1, -1], [-2, -2], [-3, -3], [-4, -4], [-5, -5], [-6, -6], [-7, -7]
+  ].freeze
+
+  POSSIBLE_FIRST_MOVES = nil
+  POSSIBLE_TAKES = POSSIBLE_MOVES
+  
   def initialize
     @sprite = Sprite.new(
       'img/queen-b.svg',
@@ -48,7 +68,7 @@ class Queen_black < Figures
     )
     @current_tile = nil
     @first_move = true
-  
+    @color = "black"
   end
 
   def setup(tile)

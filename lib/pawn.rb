@@ -16,11 +16,6 @@ class Pawn_white < Figures
     [1, 1], [1, -1]
   ].freeze
 
-  POSSIBLE_FIRST_TAKES = [
-    [2, 1], [2, -1]
-  ].freeze
-
-
   def initialize
     @sprite = Sprite.new(
       'img/pawn-w.svg',
@@ -30,6 +25,7 @@ class Pawn_white < Figures
     )
     @current_tile = nil
     @first_move = true
+    @color = "white"
   end
 
   def setup(tile)
@@ -55,10 +51,6 @@ class Pawn_black < Figures
     [-1, 1], [-1, -1]
   ].freeze
 
-  POSSIBLE_FIRST_TAKES = [
-    [-2, 1], [-2, -1]
-  ].freeze
-
   def initialize
     @sprite = Sprite.new(
       'img/pawn-b.svg',
@@ -68,6 +60,7 @@ class Pawn_black < Figures
     )
     @current_tile = nil
     @first_move = true
+    @color = "black"
   end
 
   def setup(tile)

@@ -2,6 +2,7 @@
 DEBUG = false
 
 class Figures
+  attr_reader :color
   def move_legal?(cords, figure_class, figure)
     current_cords = @current_tile.cords
     dx = (cords[0] - current_cords[0])
@@ -22,32 +23,43 @@ class Figures
     false
   end
 
-  def move_line_clear?(target, board)
+  def take_legal?(cords, figure_class, figure)
     current_cords = @current_tile.cords
-    target_cords = target
-    current_xd = current_cords[0]
-    current_yd = current_cords[1]
-    target_xd = target_cords[0]
-    target_yd = target_cords[1]
-    to_check = []
+    dx = (cords[0] - current_cords[0])
+    dy = (cords[1] - current_cords[1])
+    move = [dx, dy]
+    p "move = #{move}" if DEBUG
 
-
-    x_range = current_xd..target_xd
-    y_range = current_yd..target_yd
-
-    board.grid[x_range].each do |array|
-      array[y_range].each do |tile|
-        to_check << tile
-      end
+    if figure_class::POSSIBLE_TAKES.include?(move)
+        p "#{figure_class::POSSIBLE_TAKES}" if DEBUG
+        return true
     end
+    false
+  end
 
-    to_check.shift
-    to_check.each do |tile|
-      if !tile.empty?
-        return false
-      end
+  def move_line_clear?(target_cords, board)
+    current_cords = @current_tile.cords
+
+    #Knights King and Pawns have never blocked path
+    return true if self.is_a?(Knight_white) || self.is_a?(Knight_black)
+    return true if self.is_a?(King_white) || self.is_a?(King_black)
+    return true if self.is_a?(Pawn_white) || self.is_a?(Pawn_black)
+
+    dx = (target_cords[0] - current_cords[0]).clamp(-1, 1)
+    dy = (target_cords[1] - current_cords[1]).clamp(-1, 1)
+
+    check_x = current_cords[0] + dx
+    check_y = current_cords[1] + dy
+
+    # loop along the path but stop before the target tile
+    while [check_x, check_y] != target_cords
+      tile = board.grid[check_x][check_y]
+      return false unless tile.empty? # path is blocked
+
+      check_x += dx
+      check_y += dy
     end
-    true
+    true # path is clear
   end
 
   def move(target)
@@ -61,8 +73,32 @@ class Figures
     figure.sprite.y = target.draw_cords[:y]
   end
 
+
   def first_move?
     @first_move
   end
 
+  def remove(board)
+    to_remove = @current_tile.figure
+    to_remove.sprite.remove
+    @current_tile.figure = nil
+    board.figures.delete(to_remove)
+  end
+
+  def take(target, board)
+    figure = @current_tile.figure
+    current_tile = @current_tile
+    if take_legal?(target.cords, figure.class, figure)
+      current_tile.figure = nil
+      target_figure = target.figure
+      target_figure.remove(board)
+      target.figure = figure
+      figure.current_tile = target
+      figure.first_move = false
+      figure.sprite.x = target.draw_cords[:x]
+      figure.sprite.y = target.draw_cords[:y]
+    else
+      p "illegal take"
+    end
+  end
 end

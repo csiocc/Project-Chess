@@ -10,6 +10,8 @@ class Knight_white < Figures
   ].freeze
 
   POSSIBLE_FIRST_MOVES = nil
+  POSSIBLE_TAKES = POSSIBLE_MOVES
+
   def initialize
     @sprite = Sprite.new(
       'img/knight-w.svg',
@@ -19,6 +21,7 @@ class Knight_white < Figures
     )
     @current_tile = nil
     @first_move = true
+    @color = "white"
   end
 
   def setup(tile)
@@ -31,6 +34,16 @@ end
 
 class Knight_black < Figures
   attr_accessor :current_tile, :sprite, :first_move
+  POSSIBLE_MOVES = [
+    [2, 1], [1, 2],
+    [-1, 2], [-2, 1],
+    [-2, -1], [-1, -2],
+    [1, -2], [2, -1]
+  ].freeze
+
+  POSSIBLE_FIRST_MOVES = nil
+  POSSIBLE_TAKES = POSSIBLE_MOVES
+  
   def initialize
     @sprite = Sprite.new(
       'img/knight-b.svg',
@@ -40,6 +53,7 @@ class Knight_black < Figures
     )
     @current_tile = nil
     @first_move = true
+    @color = "black"
   end
 
   def setup(tile)
