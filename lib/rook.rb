@@ -1,6 +1,10 @@
 require_relative "figures"
 
-class Rook_white < Figures
+class Rook < Figures
+  
+end
+
+class Rook_white < Rook
   attr_accessor :current_tile, :sprite, :first_move
 
   POSSIBLE_MOVES = [
@@ -33,7 +37,7 @@ class Rook_white < Figures
 
 end
 
-class Rook_black < Figures
+class Rook_black < Rook
   attr_accessor :current_tile, :sprite, :first_move
 
   POSSIBLE_MOVES = [
@@ -45,7 +49,7 @@ class Rook_black < Figures
 
   POSSIBLE_FIRST_MOVES = nil
   POSSIBLE_TAKES = POSSIBLE_MOVES
-  
+
   def initialize
     @sprite = Sprite.new(
       'img/rook-b.svg',

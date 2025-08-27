@@ -1,6 +1,11 @@
 require_relative "figures"
 
-class Knight_white < Figures
+class Knight < Figures
+  
+end
+
+
+class Knight_white < Knight
   attr_accessor :current_tile, :sprite, :first_move 
   POSSIBLE_MOVES = [
     [2, 1], [1, 2],
@@ -32,7 +37,7 @@ class Knight_white < Figures
 
 end
 
-class Knight_black < Figures
+class Knight_black < Knight
   attr_accessor :current_tile, :sprite, :first_move
   POSSIBLE_MOVES = [
     [2, 1], [1, 2],
@@ -43,7 +48,7 @@ class Knight_black < Figures
 
   POSSIBLE_FIRST_MOVES = nil
   POSSIBLE_TAKES = POSSIBLE_MOVES
-  
+
   def initialize
     @sprite = Sprite.new(
       'img/knight-b.svg',

@@ -1,7 +1,11 @@
 require_relative "figures"
 require 'ruby2d'
 
-class Pawn_white < Figures
+class Pawn < Figures
+  
+end
+
+class Pawn_white < Pawn
   attr_accessor :current_tile, :sprite, :first_move, :en_passant
 
   POSSIBLE_MOVES = [
@@ -37,7 +41,7 @@ class Pawn_white < Figures
 
 end
 
-class Pawn_black < Figures
+class Pawn_black < Pawn
   attr_accessor :current_tile, :sprite, :first_move, :en_passant
 
   POSSIBLE_MOVES = [

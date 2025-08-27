@@ -1,8 +1,9 @@
 require_relative "valid_moves_module"
 #class for all figures for shared functions
-DEBUG = true
+
 
 class Figures
+  DEBUG = true
   include Valid_moves
   attr_reader :color
 
@@ -62,10 +63,6 @@ class Figures
     false
   end
 
-
-
-
-
   def create_en_passant_clone(target, board)
     figure = @current_tile.figure
     tile_to_set_clone_cords = []
@@ -80,6 +77,7 @@ class Figures
   end
 
   def move(target, board)
+    p "move called" if DEBUG
     current_tile = @current_tile
     figure = @current_tile.figure
     if figure.class == Pawn_white || figure.class == Pawn_black
@@ -110,20 +108,40 @@ class Figures
     board.figures.delete(to_remove)
   end
 
+  def take_en_passant_check?(target, board, figure)
+    p "take_en_passant_check called" if DEBUG
+    p "target tile enpassant status is #{target.en_passant_clone}" if DEBUG
+    p "figure.class is #{figure.class}" if DEBUG
+    p "figure.class != Pawn_white is #{figure.class != Pawn_white}" if DEBUG
+    p "figure.class != Pawn_black is #{figure.class != Pawn_black}" if DEBUG
+    if figure.class != Pawn_white && figure.class != Pawn_black && target.en_passant_clone
+      p "take_en_passant first if called ->move" if DEBUG
+      figure.move(target, board)
+      return true
+    else
+      p "take_en_passant else called" if DEBUG
+      return false
+    end
+  end
+
   def take(target, board)
     figure = @current_tile.figure
     current_tile = @current_tile
-    if take_legal?(target.cords, figure.class, figure, board)
-      current_tile.figure = nil
-      target_figure = target.figure
-      target_figure.remove(board)
-      target.figure = figure
-      figure.current_tile = target
-      figure.first_move = false
-      figure.sprite.x = target.draw_cords[:x]
-      figure.sprite.y = target.draw_cords[:y]
+    if take_en_passant_check?(target, board, figure)
+      p "take en passant escaper called" if DEBUG
     else
-      p "illegal take"
+      if take_legal?(target.cords, figure.class, figure, board)
+        current_tile.figure = nil
+        target_figure = target.figure
+        target_figure.remove(board)
+        target.figure = figure
+        figure.current_tile = target
+        figure.first_move = false
+        figure.sprite.x = target.draw_cords[:x]
+        figure.sprite.y = target.draw_cords[:y]
+      else
+        p "illegal take"
+      end
     end
   end
 end

@@ -1,6 +1,10 @@
 require_relative "figures"
 
-class Bishop_white < Figures
+class Bishop < Figures
+  
+end
+
+class Bishop_white < Bishop
   attr_accessor :current_tile, :sprite, :first_move
 
   POSSIBLE_MOVES = [
@@ -33,7 +37,7 @@ class Bishop_white < Figures
 
 end
 
-class Bishop_black < Figures
+class Bishop_black < Bishop
   attr_accessor :current_tile, :sprite, :first_move
 
   POSSIBLE_MOVES = [
@@ -45,7 +49,7 @@ class Bishop_black < Figures
 
   POSSIBLE_FIRST_MOVES = nil
   POSSIBLE_TAKES = POSSIBLE_MOVES
-  
+
   def initialize
     @sprite = Sprite.new(
       'img/bishop-b.svg',

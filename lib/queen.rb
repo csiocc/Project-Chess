@@ -1,5 +1,9 @@
 require_relative "figures"
-class Queen_white < Figures
+
+class Queen < Figures
+  
+end
+class Queen_white < Queen
   attr_accessor :current_tile, :sprite, :first_move
 
   POSSIBLE_MOVES = [
@@ -39,7 +43,7 @@ class Queen_white < Figures
 
 end
 
-class Queen_black < Figures
+class Queen_black < Queen
   attr_accessor :current_tile, :sprite, :first_move
 
   POSSIBLE_MOVES = [
