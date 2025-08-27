@@ -36,7 +36,7 @@ module Valid_moves
     end
   end
 
-  def valid_takes(figure_class, current_cords)
+  def self.valid_takes(figure_class, current_cords)
     if figure_class == Pawn_white
       return @targets["wptake"][current_cords]
     elsif figure_class == Pawn_black
@@ -46,7 +46,7 @@ module Valid_moves
     end
   end
 
-  def valid_rochade(figure_class, current_cords)
+  def self.valid_castle(figure_class, current_cords)
     if figure_class == King_white
       return @targets["wcastle"][current_cords]
     elsif figure_class == King_black
@@ -128,7 +128,7 @@ module Valid_moves
     [[r, c], @targets["downleft"][[r, c]] + @targets["upright"][[r, c]]]
   end
 
-  ### Lega moves for each Figure ###
+  ### Legal moves for each Figure ###
   
   @targets["king"] = @positions.to_h do |r, c|
     deltas = [-1, 0, 1].product([-1, 0, 1]) - [[0, 0]]
@@ -186,12 +186,12 @@ module Valid_moves
     [[r, c], valid(moves || [])]
   end
 
-  #rochade white
+  #castle white
   @targets["wcastle"] = Hash.new { |h, k| h[k] = [] }.merge({
     [0, 4] => [[0, 2], [0, 6]]
   })
 
-  #rochade black
+  #castle black
   @targets["bcastle"] = Hash.new { |h, k| h[k] = [] }.merge({
     [7, 4] => [[7, 2], [7, 6]]
   })

@@ -18,11 +18,11 @@ module Game_states
         return :select_target_tile_white
       elsif clickd_tile.figure.color == "black"
         p "falsche farbe"
-        return :white_turn
+        return :white_turn #return to self
       end
     else
-      p "Leeres Feld angeklickt. Wähle deine Figur!"
-      return :white_turn
+      p "Empty tile clicked, chose a Figure!"
+      return :white_turn #return to self
     end
   end
 
@@ -53,11 +53,11 @@ module Game_states
           end
         else
           p "something is blocking your path!"
-          return :select_target_tile_white
+          return :select_target_tile_white #return to self
         end
       else
-        p "Bitte wähle einen legalen Move!"
-        return :select_target_tile_white
+        p "Please chose a legal move!"
+        return :select_target_tile_white #return to self
       end
     else
       if clickd_tile.figure.color == "black" && figure.move_line_clear?(clickd_tile.cords, board) && figure.take_legal?(clickd_tile.cords, figure.class, figure, board)  
@@ -66,10 +66,10 @@ module Game_states
         return :black_turn
       elsif clickd_tile.figure.color == "white"
         p "dont target your own figures!"
-        return :select_target_tile_white
+        return :select_target_tile_white #return to self
       else
         p "something went wrong, try again"
-        return :select_target_tile_white
+        return :select_target_tile_white #return to self
       end
     end
   end
@@ -85,12 +85,12 @@ module Game_states
         p "#{clickd_tile.figure.class} selected"
         return :select_target_tile_black
       elsif clickd_tile.figure.color == "white"
-        p "falsche farbe"
-        return :black_turn
+        p "wrong color"
+        return :black_turn #return to self
       end
     else
-      p "Leeres Feld angeklickt. Wähle deine Figur!"
-      return :black_turn
+      p "Empty tile clicked, chose your Figure"
+      return :black_turn #return to self
     end
   end
 
@@ -121,11 +121,11 @@ module Game_states
           end
         else
           p "something is blocking your path!"
-          return :select_target_tile_black
+          return :select_target_tile_black #return to self
         end
       else
-        p "Bitte wähle einen legalen Move!"
-        return :select_target_tile_black
+        p "Please chose a legal move!"
+        return :select_target_tile_black #return to self
       end
     else
       if clickd_tile.figure.color == "white" &&figure.move_line_clear?(clickd_tile.cords, board) &&figure.take_legal?(clickd_tile.cords, figure.class, figure, board)  
@@ -134,10 +134,10 @@ module Game_states
         @game_state = :white_turn
       elsif clickd_tile.figure.color == "black"
         p "dont target your own figures!"
-        return :select_target_tile_black
+        return :select_target_tile_black #return to self
       else
         p "something went wrong, try again"
-        return :select_target_tile_black
+        return :select_target_tile_black #return to self
       end
     end
   end
