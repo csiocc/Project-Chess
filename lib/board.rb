@@ -10,6 +10,7 @@ require "ruby2d"
 
 ###Board Class creating the Board and storing Tiles and functions to access them###
 class Board
+  DEBUG = true
   attr_reader :figures, :grid
 
   def initialize
@@ -153,9 +154,10 @@ class Board
   def en_passant_reset_black
     @grid.each do |row|
       row.each do |tile|
-        if tile.en_passant_clone && tile.figure.color == "black"
-          tile.figure = nil
+        if tile.en_passant_clone && tile.figure.color == "black" && tile.figure.is_a?(Pawn)
+          p "called en_passant_reset_black on #{tile.cords} and deleted #{tile.figure}" if DEBUG
           tile.en_passant_clone = false
+          tile.figure = nil
         end
       end
     end
@@ -164,9 +166,10 @@ class Board
   def en_passant_reset_white
     @grid.each do |row|
       row.each do |tile|
-        if tile.en_passant_clone && tile.figure.color == "white"
-          tile.figure = nil
+        if tile.en_passant_clone && tile.figure.color == "white" && tile.figure.is_a?(Pawn)
+          p "called en_passant_reset_white on #{tile.cords} and deleted #{tile.figure}" if DEBUG
           tile.en_passant_clone = false
+          tile.figure = nil
         end
       end
     end

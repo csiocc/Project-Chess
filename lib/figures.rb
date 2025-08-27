@@ -52,6 +52,7 @@ class Figures
     false
   end
 
+  ### detects en_passant vulnerability ###
   def en_passant?(cords)
     current_cords = @current_tile.cords
     dx = (cords[0] - current_cords[0])
@@ -63,6 +64,7 @@ class Figures
     false
   end
 
+  ### creates an en_passant_clone to target the right figure on an en_passant move ###
   def create_en_passant_clone(target, board)
     figure = @current_tile.figure
     tile_to_set_clone_cords = []
@@ -80,15 +82,19 @@ class Figures
     p "move called" if DEBUG
     current_tile = @current_tile
     figure = @current_tile.figure
-    if figure.class == Pawn_white || figure.class == Pawn_black
+
+    #creates en_passant clone betwen start and target if moved 2 tiles
+    if figure.class == Pawn_white || figure.class == Pawn_black 
       if figure.first_move?
         if en_passant?(target.cords)
           create_en_passant_clone(target, board)
         end
       end
     end
+    #moves the figure to target tile
     current_tile.figure = nil
     target.figure = figure
+    target.en_passant_clone = false if target.en_passant_clone #prevents figure deleting if moved to a Tile with existing en_passant clone
     figure.current_tile = target
     figure.first_move = false
     figure.sprite.x = target.draw_cords[:x]
@@ -101,6 +107,7 @@ class Figures
     @first_move
   end
 
+  ###permanentely removes a figure from the board###
   def remove(board)
     to_remove = @current_tile.figure
     to_remove.sprite.remove
@@ -108,6 +115,8 @@ class Figures
     board.figures.delete(to_remove)
   end
 
+  ### checks if targettile stores an en_passant clone if yes and figure is not pawn changes take to move to not 
+  #accidentaly delete clones parrent###
   def take_en_passant_check?(target, board, figure)
     p "take_en_passant_check called" if DEBUG
     p "target tile enpassant status is #{target.en_passant_clone}" if DEBUG
