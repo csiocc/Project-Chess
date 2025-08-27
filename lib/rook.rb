@@ -1,12 +1,11 @@
 require_relative "figures"
 
 class Rook < Figures
-  
+  attr_accessor :current_tile, :sprite, :first_move
 end
 
 class Rook_white < Rook
-  attr_accessor :current_tile, :sprite, :first_move
-
+  
   def initialize
     @sprite = Sprite.new(
       'img/rook-w.svg',
@@ -19,16 +18,9 @@ class Rook_white < Rook
     @color = "white"
   end
 
-  def setup(tile)
-    @current_tile = tile
-    @sprite.x = tile.draw_cords[:x]
-    @sprite.y = tile.draw_cords[:y]
-  end
-
 end
 
 class Rook_black < Rook
-  attr_accessor :current_tile, :sprite, :first_move
 
   def initialize
     @sprite = Sprite.new(
@@ -42,9 +34,4 @@ class Rook_black < Rook
     @color = "black"
   end
 
-  def setup(tile)
-    @current_tile = tile
-    @sprite.x = tile.draw_cords[:x]
-    @sprite.y = tile.draw_cords[:y]
-  end
 end

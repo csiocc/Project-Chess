@@ -2,12 +2,11 @@ require_relative "figures"
 require 'ruby2d'
 
 class Pawn < Figures
-  
+  attr_accessor :current_tile, :sprite, :first_move, :en_passant
 end
 
 class Pawn_white < Pawn
-  attr_accessor :current_tile, :sprite, :first_move, :en_passant
-
+  
   def initialize
     @sprite = Sprite.new(
       'img/pawn-w.svg',
@@ -21,16 +20,9 @@ class Pawn_white < Pawn
     @en_passant = false
   end
 
-  def setup(tile)
-    @current_tile = tile
-    @sprite.x = tile.draw_cords[:x]
-    @sprite.y = tile.draw_cords[:y]
-  end
-
 end
 
 class Pawn_black < Pawn
-  attr_accessor :current_tile, :sprite, :first_move, :en_passant
 
   def initialize
     @sprite = Sprite.new(
@@ -43,12 +35,6 @@ class Pawn_black < Pawn
     @first_move = true
     @color = "black"
     @en_passant = false
-  end
-
-  def setup(tile)
-    @current_tile = tile
-    @sprite.x = tile.draw_cords[:x]
-    @sprite.y = tile.draw_cords[:y]
   end
 
 end

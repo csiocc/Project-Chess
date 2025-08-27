@@ -1,13 +1,12 @@
 require_relative "figures"
 
 class Knight < Figures
-  
+  attr_accessor :current_tile, :sprite, :first_move
 end
 
 
 class Knight_white < Knight
-  attr_accessor :current_tile, :sprite, :first_move 
-  
+   
   def initialize
     @sprite = Sprite.new(
       'img/knight-w.svg',
@@ -20,16 +19,9 @@ class Knight_white < Knight
     @color = "white"
   end
 
-  def setup(tile)
-    @current_tile = tile
-    @sprite.x = tile.draw_cords[:x]
-    @sprite.y = tile.draw_cords[:y]
-  end
-
 end
 
 class Knight_black < Knight
-  attr_accessor :current_tile, :sprite, :first_move
 
   def initialize
     @sprite = Sprite.new(
@@ -43,9 +35,4 @@ class Knight_black < Knight
     @color = "black"
   end
 
-  def setup(tile)
-    @current_tile = tile
-    @sprite.x = tile.draw_cords[:x]
-    @sprite.y = tile.draw_cords[:y]
-  end
 end

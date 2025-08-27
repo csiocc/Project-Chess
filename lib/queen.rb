@@ -1,10 +1,9 @@
 require_relative "figures"
 
 class Queen < Figures
-  
+  attr_accessor :current_tile, :sprite, :first_move
 end
 class Queen_white < Queen
-  attr_accessor :current_tile, :sprite, :first_move
 
   def initialize
     @sprite = Sprite.new(
@@ -18,16 +17,9 @@ class Queen_white < Queen
     @color = "white"
   end
 
-  def setup(tile)
-    @current_tile = tile
-    @sprite.x = tile.draw_cords[:x]
-    @sprite.y = tile.draw_cords[:y]
-  end
-
 end
 
 class Queen_black < Queen
-  attr_accessor :current_tile, :sprite, :first_move
 
   def initialize
     @sprite = Sprite.new(
@@ -41,9 +33,4 @@ class Queen_black < Queen
     @color = "black"
   end
 
-  def setup(tile)
-    @current_tile = tile
-    @sprite.x = tile.draw_cords[:x]
-    @sprite.y = tile.draw_cords[:y]
-  end
 end

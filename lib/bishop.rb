@@ -1,12 +1,12 @@
 require_relative "figures"
 
 class Bishop < Figures
-  
+  attr_accessor :current_tile, :sprite, :first_move
+
 end
 
 class Bishop_white < Bishop
-  attr_accessor :current_tile, :sprite, :first_move
-
+  
   def initialize
     @sprite = Sprite.new(
       'img/bishop-w.svg',
@@ -19,16 +19,9 @@ class Bishop_white < Bishop
     @color = "white"
   end
 
-  def setup(tile)
-    @current_tile = tile
-    @sprite.x = tile.draw_cords[:x]
-    @sprite.y = tile.draw_cords[:y]
-  end
-
 end
 
 class Bishop_black < Bishop
-  attr_accessor :current_tile, :sprite, :first_move
 
   def initialize
     @sprite = Sprite.new(
@@ -42,9 +35,4 @@ class Bishop_black < Bishop
     @color = "black"
   end
 
-  def setup(tile)
-    @current_tile = tile
-    @sprite.x = tile.draw_cords[:x]
-    @sprite.y = tile.draw_cords[:y]
-  end
 end

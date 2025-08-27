@@ -7,6 +7,12 @@ class Figures
   include Valid_moves
   attr_reader :color
 
+  def setup(tile)
+    @current_tile = tile
+    @sprite.x = tile.draw_cords[:x]
+    @sprite.y = tile.draw_cords[:y]
+  end
+
   def valid_move?(cords)
     valid_moves = []
     current_cords = @current_tile.cords
