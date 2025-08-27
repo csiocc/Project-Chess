@@ -7,7 +7,7 @@ DEBUG = false
 system 'clear'
 
 set title: 'Chess press ESC to exit'
-set width: 1024
+set width: 1280
 set height: 1024
 
 include Valid_moves
