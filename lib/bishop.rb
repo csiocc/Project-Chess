@@ -7,16 +7,6 @@ end
 class Bishop_white < Bishop
   attr_accessor :current_tile, :sprite, :first_move
 
-  POSSIBLE_MOVES = [
-  [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7],
-  [-1, 1], [-2, 2], [-3, 3], [-4, 4], [-5, 5], [-6, 6], [-7, 7],
-  [1, -1], [2, -2], [3, -3], [4, -4], [5, -5], [6, -6], [7, -7],
-  [-1, -1], [-2, -2], [-3, -3], [-4, -4], [-5, -5], [-6, -6], [-7, -7]
-].freeze
-
-  POSSIBLE_FIRST_MOVES = nil
-  POSSIBLE_TAKES = POSSIBLE_MOVES
-
   def initialize
     @sprite = Sprite.new(
       'img/bishop-w.svg',
@@ -39,16 +29,6 @@ end
 
 class Bishop_black < Bishop
   attr_accessor :current_tile, :sprite, :first_move
-
-  POSSIBLE_MOVES = [
-  [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7],
-  [-1, 1], [-2, 2], [-3, 3], [-4, 4], [-5, 5], [-6, 6], [-7, 7],
-  [1, -1], [2, -2], [3, -3], [4, -4], [5, -5], [6, -6], [7, -7],
-  [-1, -1], [-2, -2], [-3, -3], [-4, -4], [-5, -5], [-6, -6], [-7, -7]
-  ].freeze
-
-  POSSIBLE_FIRST_MOVES = nil
-  POSSIBLE_TAKES = POSSIBLE_MOVES
 
   def initialize
     @sprite = Sprite.new(

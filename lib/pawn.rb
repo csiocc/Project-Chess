@@ -8,18 +8,6 @@ end
 class Pawn_white < Pawn
   attr_accessor :current_tile, :sprite, :first_move, :en_passant
 
-  POSSIBLE_MOVES = [
-    [1, 0]
-  ].freeze
-
-  POSSIBLE_FIRST_MOVES = [
-    [1, 0], [2, 0]
-  ].freeze
-
-  POSSIBLE_TAKES = [
-    [1, 1], [1, -1]
-  ].freeze
-
   def initialize
     @sprite = Sprite.new(
       'img/pawn-w.svg',
@@ -43,18 +31,6 @@ end
 
 class Pawn_black < Pawn
   attr_accessor :current_tile, :sprite, :first_move, :en_passant
-
-  POSSIBLE_MOVES = [
-    [-1, 0]
-  ].freeze
-
-  POSSIBLE_FIRST_MOVES = [
-    [-1, 0], [-2, 0]
-  ].freeze
-
-  POSSIBLE_TAKES = [
-    [-1, 1], [-1, -1]
-  ].freeze
 
   def initialize
     @sprite = Sprite.new(

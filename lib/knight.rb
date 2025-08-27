@@ -7,16 +7,7 @@ end
 
 class Knight_white < Knight
   attr_accessor :current_tile, :sprite, :first_move 
-  POSSIBLE_MOVES = [
-    [2, 1], [1, 2],
-    [-1, 2], [-2, 1],
-    [-2, -1], [-1, -2],
-    [1, -2], [2, -1]
-  ].freeze
-
-  POSSIBLE_FIRST_MOVES = nil
-  POSSIBLE_TAKES = POSSIBLE_MOVES
-
+  
   def initialize
     @sprite = Sprite.new(
       'img/knight-w.svg',
@@ -39,15 +30,6 @@ end
 
 class Knight_black < Knight
   attr_accessor :current_tile, :sprite, :first_move
-  POSSIBLE_MOVES = [
-    [2, 1], [1, 2],
-    [-1, 2], [-2, 1],
-    [-2, -1], [-1, -2],
-    [1, -2], [2, -1]
-  ].freeze
-
-  POSSIBLE_FIRST_MOVES = nil
-  POSSIBLE_TAKES = POSSIBLE_MOVES
 
   def initialize
     @sprite = Sprite.new(

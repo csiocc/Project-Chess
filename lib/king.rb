@@ -6,18 +6,6 @@ end
 
 class King_white < King
   attr_accessor :current_tile, :sprite, :first_move
-  
-  POSSIBLE_MOVES = [
-    [1, 0], [-1, 0], [0, 1], [0, -1],
-    [1, 1], [1, -1], [-1, 1], [-1, -1]
-  ].freeze
-
-  POSSIBLE_FIRST_MOVES = [
-    [2, 0],  # rochade (right, kingside)
-    [-2, 0]  # rochade (left, queenside)
-  ].freeze
-
-  POSSIBLE_TAKES = POSSIBLE_MOVES
 
   def initialize
     @sprite = Sprite.new(
@@ -41,18 +29,6 @@ end
 
 class King_black < King
   attr_accessor :current_tile, :sprite, :first_move
-
-  POSSIBLE_MOVES = [
-    [1, 0], [-1, 0], [0, 1], [0, -1],
-    [1, 1], [1, -1], [-1, 1], [-1, -1]
-  ].freeze
-
-  POSSIBLE_FIRST_MOVES = [
-    [2, 0],  # rochade (right, kingside)
-    [-2, 0]  # rochade (left, queenside)
-  ].freeze
-
-  POSSIBLE_TAKES = POSSIBLE_MOVES
   
   def initialize
     @sprite = Sprite.new(

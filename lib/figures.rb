@@ -3,7 +3,7 @@ require_relative "valid_moves_module"
 
 
 class Figures
-  DEBUG = true
+  DEBUG = false
   include Valid_moves
   attr_reader :color
 
