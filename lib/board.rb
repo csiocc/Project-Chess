@@ -216,7 +216,7 @@ class Board
 
   def find_tile(cords)
     @tiles.each do |tile|
-      if tile.draw_cords[:x] < cords[:x] && tile.draw_cords[:x] + 128 > cords[:x] && tile.draw_cords[:y] < cords[:y] && tile.draw_cords[:y] + 128 > cords[:y]
+      if tile.draw_cords[:x] < cords[:x] && tile.draw_cords[:x] + Config.tile_size > cords[:x] && tile.draw_cords[:y] < cords[:y] && tile.draw_cords[:y] + Config.tile_size > cords[:y]
         return tile
       end
     end

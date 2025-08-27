@@ -1,4 +1,4 @@
-require_relative "valid_moves_module"
+require_relative "valid_moves"
 #class for all figures for shared functions
 
 

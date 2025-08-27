@@ -1,31 +1,36 @@
 require_relative "lib/board"
-require_relative "lib/gamestate_module"
-require_relative "lib/valid_moves_module"
+require_relative "lib/gamestate"
+require_relative "lib/valid_moves"
 require_relative "lib/config"
+require_relative "lib/tile"
+require_relative "lib/highlight"
 require "ruby2d"
+### modules ###
 include Config
+include Valid_moves
+include Game_states
+include Highlight
+# debug option #
 DEBUG = false
-
 system 'clear'
 
+# setup display window #
 set title: 'Chess press ESC to exit'
 set width: Config.window_width
 set height: Config.window_size
 
-include Valid_moves
-include Game_states
+# setup playboard #
 test = Board.new
 test.setup
 test.draw_board
 test.setup_figures
 Valid_moves.build_targets
 
-
+# game state variables #
 @game_state = :white_turn
 @highlight_square = nil #highlight square to highlight selected figure
 
-
-
+# key events #
 on :key_down do |event|
   case event.key
   when 'escape'
@@ -37,21 +42,6 @@ on :key_down do |event|
     test.draw_board
     test.setup_figures
     @game_state = :white_turn
-  end
-end
-
-def update_highlight
-  selected_tile = Game_states.selected_tile #get tile to highlight
-
-  if selected_tile
-    unless @highlight_square #create highlight square if none existing
-      @highlight_square = Square.new(size: 128, color: [1, 1, 0, 0.4])
-    end
-    @highlight_square.x = selected_tile.draw_cords[:x] #highlight suqare positioning
-    @highlight_square.y = selected_tile.draw_cords[:y]
-    @highlight_square.add
-  elsif @highlight_square
-    @highlight_square.remove #if no tile selected remove highlight
   end
 end
 
@@ -75,7 +65,7 @@ on :mouse_down do |event|
       p "game state: #{@game_state}" if DEBUG
       Game_states.reset_en_passant_white(test)
   end
-  update_highlight
+  @highlight_square = Highlight.update_highlight
   
 end
 
