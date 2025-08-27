@@ -11,8 +11,8 @@ class Pawn_white < Pawn
     @sprite = Sprite.new(
       'img/pawn-w.svg',
       x: 0, y: 0,
-      width: 128,
-      height: 128
+      width: Config.tile_size,
+      height: Config.tile_size
     )
     @current_tile = nil
     @first_move = true
@@ -28,8 +28,8 @@ class Pawn_black < Pawn
     @sprite = Sprite.new(
       'img/pawn-b.svg',
       x: 0, y: 0,
-      width: 128,
-      height: 128
+      width: Config.tile_size,
+      height: Config.tile_size
     )
     @current_tile = nil
     @first_move = true

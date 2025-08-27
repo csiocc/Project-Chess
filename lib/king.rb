@@ -11,8 +11,8 @@ class King_white < King
     @sprite = Sprite.new(
       'img/king-w.svg',
       x: 0, y: 0,
-      width: 128,
-      height: 128
+      width: Config.tile_size,
+      height: Config.tile_size
     )
     @current_tile = nil
     @first_move = true
@@ -29,8 +29,8 @@ class King_black < King
     @sprite = Sprite.new(
       'img/king-b.svg',
       x: 0, y: 0,
-      width: 128,
-      height: 128
+      width: Config.tile_size,
+      height: Config.tile_size
     )
     @current_tile = nil
     @first_move = true

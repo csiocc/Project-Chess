@@ -11,8 +11,8 @@ class Knight_white < Knight
     @sprite = Sprite.new(
       'img/knight-w.svg',
       x: 0, y: 0,
-      width: 128,
-      height: 128
+      width: Config.tile_size,
+      height: Config.tile_size
     )
     @current_tile = nil
     @first_move = true
@@ -27,8 +27,8 @@ class Knight_black < Knight
     @sprite = Sprite.new(
       'img/knight-b.svg',
       x: 0, y: 0,
-      width: 128,
-      height: 128
+      width: Config.tile_size,
+      height: Config.tile_size
     )
     @current_tile = nil
     @first_move = true

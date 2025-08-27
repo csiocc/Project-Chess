@@ -1,5 +1,5 @@
 module Config
-  @WINDOW_SIZE = 1024
+  @WINDOW_SIZE = 512
   @TILE_SIZE = (@WINDOW_SIZE / 8)
   @ADD_WIDTH = (@WINDOW_SIZE / 4)
   @BORDER = (@ADD_WIDTH / 64)
@@ -7,6 +7,10 @@ module Config
   #getter methods to access data
   def self.window_size 
     @WINDOW_SIZE
+  end
+
+  def self.window_width
+    @WINDOW_SIZE + @ADD_WIDTH
   end
 
   def self.tile_size

@@ -10,8 +10,8 @@ class Rook_white < Rook
     @sprite = Sprite.new(
       'img/rook-w.svg',
       x: 0, y: 0,
-      width: 128,
-      height: 128
+      width: Config.tile_size,
+      height: Config.tile_size
     )
     @current_tile = nil
     @first_move = true
@@ -26,8 +26,8 @@ class Rook_black < Rook
     @sprite = Sprite.new(
       'img/rook-b.svg',
       x: 0, y: 0,
-      width: 128,
-      height: 128
+      width: Config.tile_size,
+      height: Config.tile_size
     )
     @current_tile = nil
     @first_move = true

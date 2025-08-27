@@ -1,14 +1,16 @@
 require_relative "lib/board"
 require_relative "lib/gamestate_module"
 require_relative "lib/valid_moves_module"
+require_relative "lib/config"
 require "ruby2d"
+include Config
 DEBUG = false
 
 system 'clear'
 
 set title: 'Chess press ESC to exit'
-set width: 1280
-set height: 1024
+set width: Config.window_width
+set height: Config.window_size
 
 include Valid_moves
 include Game_states

@@ -11,8 +11,8 @@ class Bishop_white < Bishop
     @sprite = Sprite.new(
       'img/bishop-w.svg',
       x: 0, y: 0,
-      width: 128,
-      height: 128
+      width: Config.tile_size,
+      height: Config.tile_size
     )
     @current_tile = nil
     @first_move = true
@@ -27,8 +27,8 @@ class Bishop_black < Bishop
     @sprite = Sprite.new(
       'img/bishop-b.svg',
       x: 0, y: 0,
-      width: 128,
-      height: 128
+      width: Config.tile_size,
+      height: Config.tile_size
     )
     @current_tile = nil
     @first_move = true

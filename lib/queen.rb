@@ -9,8 +9,8 @@ class Queen_white < Queen
     @sprite = Sprite.new(
       'img/queen-w.svg',
       x: 0, y: 0,
-      width: 128,
-      height: 128
+      width: Config.tile_size,
+      height: Config.tile_size
     )
     @current_tile = nil
     @first_move = true
@@ -25,8 +25,8 @@ class Queen_black < Queen
     @sprite = Sprite.new(
       'img/queen-b.svg',
       x: 0, y: 0,
-      width: 128,
-      height: 128
+      width: Config.tile_size,
+      height: Config.tile_size
     )
     @current_tile = nil
     @first_move = true
