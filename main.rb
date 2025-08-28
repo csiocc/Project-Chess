@@ -14,7 +14,7 @@ include Game_states
 include Highlight
 include Check  ####### ONLY FOR TEST####
 # debug option #
-DEBUG = false
+DEBUG = true
 system 'clear'
 
 # setup display window #
@@ -51,12 +51,6 @@ on :mouse_down do |event|
   
   case @game_state
     when :white_turn
-      if Check.check?(test.white_king_pos, test)
-        p "kingpos is #{test.white_king_pos}"
-        p "white king in check!"
-      else
-        p "no check detected"
-      end
       @game_state = Game_states.select_figure_white(clickd_tile, test)
       p "game state: #{@game_state}" if DEBUG
     when :select_target_tile_white
@@ -70,6 +64,10 @@ on :mouse_down do |event|
       @game_state = Game_states.select_target_tile_black(clickd_tile, test)
       p "game state: #{@game_state}" if DEBUG
       Game_states.reset_en_passant_white(test)
+    when :check_white
+      p "gamestate check white"
+    when :check_black
+      p "gamestate check black"
   end
   @highlight_square = Highlight.update_highlight
   

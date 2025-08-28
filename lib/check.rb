@@ -5,16 +5,6 @@ module Check
   DEBUG = false
   include Valid_moves
 
-  def self.test(current_cords, board)
-    p "current cords are #{current_cords}" if DEBUG
-    p Valid_moves.targets("queen", current_cords) if DEBUG
-    queen_pos = Valid_moves.targets("queen", current_cords).find do |(r, c)|
-      p "r is #{r} and c is #{c}"
-      board.grid[r][c].figure&.is_a?(Queen)
-    end
-    p "Position der Dame ist: #{queen_pos}"
-  end
-
   ### method to validate check ###
   def self.check?(king_cords, board)
     # Define threats for the white king (from black pieces)
@@ -45,9 +35,5 @@ module Check
 
     false # No check detected
   end
-
-  def check_mate?
-    
-  end
-
+  
 end

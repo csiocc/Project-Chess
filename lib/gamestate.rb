@@ -1,3 +1,4 @@
+require_relative "check"
 module Game_states
   #Gamestate management
   @selected_tile = nil
@@ -6,6 +7,9 @@ module Game_states
   def self.selected_tile #getter method for other modules/classes
     @selected_tile
   end
+
+### Game State Methods ###
+
 # when :white_turn #select figure
   def select_figure_white(clickd_tile, board)
     if clickd_tile.class == Array #emergency return if clicked right between 2 Tiles
@@ -142,6 +146,12 @@ module Game_states
     end
   end
 
+
+
+
+
+  ### Helpermethods ###
+
   def reset_en_passant_white(board)
     board.en_passant_reset_white
   end
@@ -149,5 +159,23 @@ module Game_states
   def reset_en_passant_black(board)
     board.en_passant_reset_black
   end
+
+  def check_status_white(white_king_pos, board)
+    if Check.check?(white_king_pos, board)
+      return :check_white
+    else
+      return :black_turn
+    end
+  end
+
+  def check_status_black(black_king_pos, board)
+    if Check.check?(black_king_pos, board)
+      return :check_black
+    else
+      return :white_turn
+    end
+  end
+
+
 
 end
