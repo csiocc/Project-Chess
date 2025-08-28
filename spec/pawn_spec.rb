@@ -1,6 +1,7 @@
 require_relative '../lib/pawn'
 require_relative '../lib/board'
 require_relative '../lib/figures'
+require "rspec"
 system 'clear'
 
 describe Pawn_white do

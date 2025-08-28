@@ -4,12 +4,15 @@ require_relative "lib/valid_moves"
 require_relative "lib/config"
 require_relative "lib/tile"
 require_relative "lib/highlight"
+require_relative "lib/check" ####### ONLY FOR TEST####
+# display gem #
 require "ruby2d"
 ### modules ###
 include Config
 include Valid_moves
 include Game_states
 include Highlight
+include Check  ####### ONLY FOR TEST####
 # debug option #
 DEBUG = false
 system 'clear'
@@ -21,10 +24,9 @@ set height: Config.window_size
 
 # setup playboard #
 test = Board.new
-test.setup
-test.draw_board
 test.setup_figures
 Valid_moves.build_targets
+
 
 # game state variables #
 @game_state = :white_turn
@@ -38,19 +40,23 @@ on :key_down do |event|
   when "r"
     test = nil
     test = Board.new
-    test.setup
-    test.draw_board
     test.setup_figures
     @game_state = :white_turn
   end
 end
-
+# mouse events #
 on :mouse_down do |event|
   clickd_tile = test.find_tile({ x: event.x, y: event.y })
   next if clickd_tile.nil? #next if clicked outside of the board
   
   case @game_state
     when :white_turn
+      if Check.check?(test.white_king_pos, test)
+        p "kingpos is #{test.white_king_pos}"
+        p "white king in check!"
+      else
+        p "no check detected"
+      end
       @game_state = Game_states.select_figure_white(clickd_tile, test)
       p "game state: #{@game_state}" if DEBUG
     when :select_target_tile_white
@@ -69,4 +75,6 @@ on :mouse_down do |event|
   
 end
 
+
+ # show window #
 show

@@ -1,6 +1,6 @@
 
 module Valid_moves
-  DEBUG = false
+  DEBUG = true
   @targets = {} # Hash for all possible moves
   @positions = nil
 
@@ -10,8 +10,14 @@ module Valid_moves
     end
   end
 
-  def self.targets
-    @targets
+  def valid(positions)
+    Array(positions).select do |r, c|
+      (0...8).include?(r) && (0...8).include?(c)
+    end
+  end
+
+  def self.targets(figure, cords)
+    @targets.dig(figure, cords) || []
   end
 
   def self.valid_moves(figure_class, current_cords)
@@ -54,17 +60,26 @@ module Valid_moves
     end
   end
 
-  def self.los(current, target, board) 
-    path = []
-    ["up","down","left","right","upleft","upright","downleft","downright"].each do |direction|
-      temp_path = @targets[direction][current] || []
-      if temp_path.include?(target) #geting path between current and target checks for direction
-        index = temp_path.index(target)
-        path = temp_path[0...index]
+  def self.los(current, target, board)
+    return false if current == target
+    directions = ["up", "down", "left", "right", "upleft", "upright", "downleft", "downright"]
+    path_to_check = nil
+
+    directions.each do |dir|
+      line = @targets.dig(dir, current)
+      next if line.nil?
+
+      if (target_index = line.index(target))
+        path_to_check = line[0...target_index]
         break
       end
     end
-    path.all? { |cords| board.grid[cords[0]][cords[1]].figure.nil? } # true, if all free 
+
+    return false if path_to_check.nil?
+
+    path_to_check.all? do |r, c|
+      board.grid[r][c].figure.nil?
+    end
   end
   
 
@@ -97,27 +112,23 @@ module Valid_moves
   end
 
   @targets["upleft"] = @positions.to_h do |r, c|
-    up    = @targets["up"][[r, c]]
-    left  = @targets["left"][[r, c]]
-    [[r, c], up.zip(left).map { |(ru, _), (_, cl)| [ru, cl] }]
+    moves = (1...8).map { |i| [r + i, c - i] }
+    [[r, c], valid(moves)]
   end
 
   @targets["upright"] = @positions.to_h do |r, c|
-    up     = @targets["up"][[r, c]]
-    right  = @targets["right"][[r, c]]
-    [[r, c], up.zip(right).map { |(ru, _), (_, cr)| [ru, cr] }]
+    moves = (1...8).map { |i| [r + i, c + i] }
+    [[r, c], valid(moves)]
   end
 
   @targets["downleft"] = @positions.to_h do |r, c|
-    down  = @targets["down"][[r, c]]
-    left  = @targets["left"][[r, c]]
-    [[r, c], down.zip(left).map { |(rd, _), (_, cl)| [rd, cl] }]
+    moves = (1...8).map { |i| [r - i, c - i] }
+    [[r, c], valid(moves)]
   end
 
   @targets["downright"] = @positions.to_h do |r, c|
-    down  = @targets["down"][[r, c]]
-    right = @targets["right"][[r, c]]
-    [[r, c], down.zip(right).map { |(rd, _), (_, cr)| [rd, cr] }]
+    moves = (1...8).map { |i| [r - i, c + i] }
+    [[r, c], valid(moves)]
   end
 
   @targets["diagUL"] = @positions.to_h do |r, c|

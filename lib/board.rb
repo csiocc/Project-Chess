@@ -7,14 +7,14 @@ require_relative "bishop"
 require_relative "queen"
 require_relative "king"
 require_relative "config"
+require_relative "valid_moves"
 require "ruby2d"
 
 ###Board Class creating the Board and storing Tiles and functions to access them###
 class Board
   include Config
-  DEBUG = true
   attr_reader :figures, :grid
-
+  DEBUG = false
   def initialize
     @grid = nil
     @tiles = []
@@ -25,6 +25,8 @@ class Board
     @black_storage = []
     @display = []
     @buttons = []
+    setup
+    draw_board
   end
 
   ###Board setup with 8x8 Tiles###
@@ -250,6 +252,20 @@ class Board
           tile.figure = nil
         end
       end
+    end
+  end
+
+  def white_king_pos
+    @figures.each do |figure|
+      if figure.is_a?(King_white)
+        return figure.current_tile.cords if figure.is_a?(King_white)
+      end
+    end
+  end
+
+  def black_king_pos
+    @figures.each do |figure|
+      return figure.current_tile.cords if figure.is_a?(King_black)
     end
   end
 
