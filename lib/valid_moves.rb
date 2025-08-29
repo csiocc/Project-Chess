@@ -1,6 +1,6 @@
 
 module Valid_moves
-  DEBUG = true
+  DEBUG = false
   @targets = {} # Hash for all possible moves
   @positions = nil
 

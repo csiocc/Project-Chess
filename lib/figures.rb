@@ -171,6 +171,13 @@ class Figures
       figure.sprite.height = Config.storage_tile_size
     end
     board.figures.delete(figure)
+    
+    if figure.color == "white"
+      board.white_figures.delete(figure)
+    elsif figure.color == "black"
+      board.black_figures.delete(figure)
+    end
+
   end
 
   ### Helpermethods ###

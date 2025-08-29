@@ -14,7 +14,7 @@ require "ruby2d"
 class Board
   include Config
   attr_reader  :grid
-  attr_accessor :figures, :white_storage, :black_storage
+  attr_accessor :figures, :white_storage, :black_storage, :white_figures, :black_figures
   DEBUG = false
   def initialize
     @grid = nil
@@ -26,6 +26,8 @@ class Board
     @black_storage = []
     @display = []
     @buttons = []
+    @white_figures = []
+    @black_figures = []
     setup
     draw_board
   end
@@ -145,69 +147,87 @@ class Board
       pawn = Pawn_white.new
       pawn.setup(tile)
       @figures << pawn
+      @white_figures << pawn
     end
     @grid[6].each do |tile|
       pawn = Pawn_black.new
       pawn.setup(tile)
       @figures << pawn
+      @black_figures << pawn
     end
   
     # rooks
     rook = Rook_white.new
     rook.setup(@grid[0][0])
     @figures << rook
+    @white_figures << rook
     rook = Rook_white.new
     rook.setup(@grid[0][7])
+    @white_figures << rook
     @figures << rook
     rook = Rook_black.new
     rook.setup(@grid[7][0])
+    @black_figures << rook
     @figures << rook
     rook = Rook_black.new
     rook.setup(@grid[7][7])
+    @black_figures << rook
     @figures << rook
 
     #knights
     knight = Knight_white.new
     knight.setup(@grid[0][1])
+    @white_figures << knight
     @figures << knight
     knight = Knight_white.new
     knight.setup(@grid[0][6])
+    @white_figures << knight
     @figures << knight
     knight = Knight_black.new
     knight.setup(@grid[7][1])
+    @black_figures << knight
     @figures << knight
     knight = Knight_black.new
     knight.setup(@grid[7][6])
+    @black_figures << knight
     @figures << knight
 
     #bishops
     bishop = Bishop_white.new
     bishop.setup(@grid[0][2])
+    @white_figures << bishop
     @figures << bishop
     bishop = Bishop_white.new
     bishop.setup(@grid[0][5])
     @figures << bishop
+    @white_figures << bishop
     bishop = Bishop_black.new
     bishop.setup(@grid[7][2])
+    @black_figures << bishop
     @figures << bishop
     bishop = Bishop_black.new
     bishop.setup(@grid[7][5])
+    @black_figures << bishop
     @figures << bishop
 
     #queens
     queen = Queen_white.new
     queen.setup(@grid[0][3])
+    @white_figures << queen
     @figures << queen
     queen = Queen_black.new
     queen.setup(@grid[7][3])
+    @black_figures << queen
     @figures << queen
 
     #kings
     king = King_white.new
     king.setup(@grid[0][4])
+    @white_figures << king
     @figures << king
     king = King_black.new
     king.setup(@grid[7][4])
+    @black_figures << king
     @figures << king
 
     #linking figures to tiles
@@ -268,6 +288,55 @@ class Board
     @figures.each do |figure|
       return figure.current_tile.cords if figure.is_a?(King_black)
     end
+  end
+
+  def move_simulation(figure, target_cords)
+    current_tile = figure.current_tile
+    target_tile = self.grid[target_cords[0]][target_cords[1]]
+    
+    taken_figure = target_tile.figure
+
+    #storing states to undo the move#
+    undo_info = {
+      moved_figure: figure,
+      current_tile: current_tile,
+      target_tile: target_tile,
+      taken_figure: taken_figure,
+      was_first_move: figure.respond_to?(:first_move) ? figure.first_move : nil
+    }
+
+    #move
+    target_tile.figure = figure
+    current_tile.figure = nil
+    figure.current_tile = target_tile
+
+    #update figure states
+    figure.first_move = false if figure.respond_to?(:first_move)
+    
+    #remove taken figures
+    self.figures.delete(taken_figure) if taken_figure
+
+    return undo_info
+  end
+
+  def undo_simulation(undo_info)
+    moved_figure = undo_info[:moved_figure]
+    current_tile = undo_info[:current_tile]
+    target_tile = undo_info[:target_tile]
+    taken_figure = undo_info[:taken_figure]
+    was_first_move = undo_info[:was_first_move]
+
+    #undo the move
+    current_tile.figure = moved_figure
+    moved_figure.current_tile = current_tile
+    
+    #restore figure states
+    moved_figure.first_move = was_first_move if moved_figure.respond_to?(:first_move)
+    
+    #restore taken figures
+    target_tile.figure = taken_figure
+    self.figures << taken_figure if taken_figure
+
   end
 
 end

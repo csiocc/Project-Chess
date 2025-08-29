@@ -66,6 +66,12 @@ on :mouse_down do |event|
       Game_states.reset_en_passant_white(test)
     when :check_white
       p "gamestate check white"
+      result = Game_states.check_status("white", test)
+      @game_state = result[:check_info]
+      p "#{result[:legal_moves].length} legal moves found}"
+      puts result[:legal_moves]
+    when :check_black
+      p "gamestate check black}"
     when :check_black
       p "gamestate check black"
   end

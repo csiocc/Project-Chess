@@ -1,4 +1,9 @@
 require_relative "check"
+
+### i know i copyed most of the methods for black / white
+#   a better aproach would be to just send the color as an argument to the method and make them interchangeable
+#   for both colors. Next time.
+
 module Game_states
   DEBUG = true
   #Gamestate management
@@ -147,9 +152,48 @@ module Game_states
     end
   end
 
-  # when :check_white
-  def check_white
-    white_figures = nil
+  # when :check
+  def check_status(color, board)
+    legal_moves = []
+    check_info = {status: nil, legal_moves: legal_moves}
+    case color
+      when "white"
+        king = board.figures.find { |f| f.is_a?(King_white) }
+        board.white_figures.each do |figure|
+          current_tile = figure.current_tile
+          potential_moves = Valid_moves.valid_moves(figure.class, current_tile.cords)
+          potential_moves.each do |move|
+            if board.grid[move[0]][move[1]].figure && Valid_moves.los(current_tile.cords, move, board)
+              undo_info = board.move_simulation(figure, move)
+              if !Check.check?(king.current_tile.cords, board)
+                legal_moves << { figure: figure.class, from: current_tile.cords, to: move }
+              end
+              board.undo_simulation(undo_info)
+            end
+          end
+          check_info = {status: :check_mate_black, legal_moves: legal_moves} if legal_moves.empty?
+          check_info = {status: :check_black, legal_moves: legal_moves} if !legal_moves.empty?
+        end
+        
+      when "black"
+        king = board.figures.find { |f| f.is_a?(King_black) }
+        board.black_figures.each do |figure|
+          current_tile = figure.current_tile
+          potential_moves = Valid_moves.valid_moves(figure.class, current_tile.cords)
+          potential_moves.each do |move|
+            if board.grid[move[0]][move[1]].figure && Valid_moves.los(current_tile.cords, move, board)
+              undo_info = board.move_simulation(figure, move)
+              if !Check.check?(king.current_tile.cords, board)
+                legal_moves << { figure: figure.class, from: current_tile.cords, to: move }
+              end
+              board.undo_simulation(undo_info)
+            end
+          end 
+        end
+        check_info = {check_info: :check_mate_black, legal_moves: legal_moves} if legal_moves.empty?
+        check_info = {check_info: :check_black, legal_moves: legal_moves} if !legal_moves.empty?
+    end
+    return check_info
   end
   
 
