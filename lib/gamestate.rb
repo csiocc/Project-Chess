@@ -149,7 +149,7 @@ module Game_states
 
   # when :check_white
   def check_white
-    white_figures = 
+    white_figures = nil
   end
   
 

@@ -107,18 +107,8 @@ class Figures
     figure.sprite.y = target.draw_cords[:y]
   end
 
-
-
   def first_move?
     @first_move
-  end
-
-  ###permanentely removes a figure from the board###
-  def remove(board)
-    to_remove = @current_tile.figure
-    to_remove.sprite.remove
-    @current_tile.figure = nil
-    board.figures.delete(to_remove)
   end
 
   ### checks if targettile stores an en_passant clone if yes and figure is not pawn changes take to move to not 
@@ -148,15 +138,54 @@ class Figures
       if take_legal?(target.cords, figure.class, figure, board)
         current_tile.figure = nil
         target_figure = target.figure
-        target_figure.remove(board)
         target.figure = figure
         figure.current_tile = target
         figure.first_move = false
         figure.sprite.x = target.draw_cords[:x]
         figure.sprite.y = target.draw_cords[:y]
+        move_to_storage(target_figure, board)
+        p "figure moved to storage, storage is now: #{board.white_storage}"
       else
         p "illegal take"
       end
     end
   end
+
+  def move_to_storage(figure, board)
+    color = figure.color
+    if color == "white"
+      tile = first_free_tile(board.white_storage, board)
+      tile.figure = figure
+      figure.current_tile = tile
+      figure.sprite.x = tile.draw_cords[:x]
+      figure.sprite.y = tile.draw_cords[:y]
+      figure.sprite.width = Config.storage_tile_size
+      figure.sprite.height = Config.storage_tile_size
+    elsif color == "black"
+      tile = first_free_tile(board.black_storage, board)
+      tile.figure = figure
+      figure.current_tile = tile
+      figure.sprite.x = tile.draw_cords[:x]
+      figure.sprite.y = tile.draw_cords[:y]
+      figure.sprite.width = Config.storage_tile_size
+      figure.sprite.height = Config.storage_tile_size
+    end
+    board.figures.delete(figure)
+  end
+
+  ### Helpermethods ###
+
+  def first_free_tile(storage, board)
+    storage.each do |tile|
+      if tile.empty?
+        return tile
+      end
+    end
+  end
+
 end
+
+
+  
+
+

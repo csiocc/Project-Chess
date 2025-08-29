@@ -13,7 +13,8 @@ require "ruby2d"
 ###Board Class creating the Board and storing Tiles and functions to access them###
 class Board
   include Config
-  attr_reader :figures, :grid
+  attr_reader  :grid
+  attr_accessor :figures, :white_storage, :black_storage
   DEBUG = false
   def initialize
     @grid = nil
