@@ -61,6 +61,11 @@ module Valid_moves
   end
 
   def self.los(current, target, board)
+    figure = board.grid[current[0]][current[1]].figure
+    return true if figure.is_a?(King)
+    return true if figure.is_a?(Knight)
+    return true if figure.is_a?(Pawn)
+
     return false if current == target
     directions = ["up", "down", "left", "right", "upleft", "upright", "downleft", "downright"]
     path_to_check = nil

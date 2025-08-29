@@ -1,5 +1,6 @@
 require_relative "check"
 module Game_states
+  DEBUG = true
   #Gamestate management
   @selected_tile = nil
 
@@ -38,22 +39,22 @@ module Game_states
     figure = @selected_tile.figure
     if clickd_tile.empty? #if clicked outside of the board
       if figure.valid_move?(clickd_tile.cords) #continue if move is legal
-        if figure.move_line_clear?(clickd_tile.cords, board) #continue if move line is clear
+        if Valid_moves.los(@selected_tile.cords, clickd_tile.cords, board) #continue if move line is clear
           if figure.first_move?
             if figure.class == Pawn_white || figure.class == Pawn_black #special rule for pawn en passant
               figure.move(clickd_tile, board)
               figure.en_passant = true if figure.en_passant?(clickd_tile.cords)
               @selected_tile = nil
-              return :black_turn
+              return check_status_black(board.black_king_pos, board)
             else 
               figure.move(clickd_tile, board)
               @selected_tile = nil
-              return :black_turn
+              return check_status_black(board.black_king_pos, board)
             end
           else
             figure.move(clickd_tile, board)
             @selected_tile = nil
-            return :black_turn
+            return check_status_black(board.black_king_pos, board)
           end
         else
           p "something is blocking your path!"
@@ -67,7 +68,7 @@ module Game_states
       if clickd_tile.figure.color == "black" && figure.move_line_clear?(clickd_tile.cords, board) && figure.take_legal?(clickd_tile.cords, figure.class, figure, board)  
         figure.take(clickd_tile, board)
         @selected_tile = nil
-        return :black_turn
+        return check_status_black(board.black_king_pos, board)
       elsif clickd_tile.figure.color == "white"
         p "dont target your own figures!"
         return :select_target_tile_white #return to self
@@ -112,16 +113,16 @@ module Game_states
               figure.move(clickd_tile, board)
               figure.en_passant = true if figure.en_passant?(clickd_tile.cords)
               @selected_tile = nil
-              return :white_turn
+              return check_status_white(board.white_king_pos, board)
             else 
               figure.move(clickd_tile, board)
               @selected_tile = nil
-              return :white_turn
+              return check_status_white(board.white_king_pos, board)
             end
           else
             figure.move(clickd_tile, board)
             @selected_tile = nil
-            return :white_turn
+            return check_status_white(board.white_king_pos, board)
           end
         else
           p "something is blocking your path!"
@@ -135,7 +136,7 @@ module Game_states
       if clickd_tile.figure.color == "white" &&figure.move_line_clear?(clickd_tile.cords, board) &&figure.take_legal?(clickd_tile.cords, figure.class, figure, board)  
         figure.take(clickd_tile, board)
         @selected_tile = nil
-        @game_state = :white_turn
+        @game_state = check_status_white(board.white_king_pos, board)
       elsif clickd_tile.figure.color == "black"
         p "dont target your own figures!"
         return :select_target_tile_black #return to self
@@ -145,6 +146,16 @@ module Game_states
       end
     end
   end
+
+  # when :check_white
+  def check_white
+    white_figures = 
+  end
+  
+
+
+  # when :check_black
+  
 
 
 
@@ -164,15 +175,17 @@ module Game_states
     if Check.check?(white_king_pos, board)
       return :check_white
     else
-      return :black_turn
+      return :white_turn
     end
   end
 
   def check_status_black(black_king_pos, board)
     if Check.check?(black_king_pos, board)
+      p "check black true. Kingpos is:#{black_king_pos}" if DEBUG
       return :check_black
     else
-      return :white_turn
+      p "check black false. Kingpos is:#{black_king_pos}" if DEBUG
+      return :black_turn
     end
   end
 

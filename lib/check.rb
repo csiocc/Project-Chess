@@ -7,33 +7,46 @@ module Check
 
   ### method to validate check ###
   def self.check?(king_cords, board)
-    # Define threats for the white king (from black pieces)
-    threats = {
-      queen: { class: Queen_black, los: true },
-      rook: { class: Rook_black, los: true },
-      bishop: { class: Bishop_black, los: true },
-      knight: { class: Knight_black, los: false },
-      pawn: { class: Pawn_black, los: false }
-    }
+    # define threats for the white king (from black pieces)
+    king = board.grid[king_cords[0]][king_cords[1]].figure
+    return false unless king&.is_a?(King)
+    if king.color == "white"
+      threats = {
+        queen: { class: Queen_black, los: true },
+        rook: { class: Rook_black, los: true },
+        bishop: { class: Bishop_black, los: true },
+        knight: { class: Knight_black, los: false },
+        pawn: { class: Pawn_black, los: false }
+      }  
+    elsif king.color == "black"
+      threats = {
+        queen: { class: Queen_white, los: true },
+        rook: { class: Rook_white, los: true },
+        bishop: { class: Bishop_white, los: true },
+        knight: { class: Knight_white, los: false },
+        pawn: { class: Pawn_white, los: false }
+      }
+    end
+    
 
-    threats.each do |figure_type, threat_info|
-      figure_class = threat_info[:class]
-      targets_method = (figure_type == :pawn) ? "bptake" : figure_type.to_s
+    threats.each do |figure_type, info|
+      figure_class = info[:class]
+      current_figure = (figure_type == :pawn) ? "bptake" : figure_type.to_s
 
-      is_in_check = Valid_moves.targets(targets_method, king_cords).any? do |r, c|
+      is_in_check = Valid_moves.targets(current_figure, king_cords).any? do |r, c|
         next unless board.grid[r][c].figure&.is_a?(figure_class)
 
-        if threat_info[:los]
+        if info[:los]
           Valid_moves.los([r, c], king_cords, board)
         else
-          true # For pieces that don't need line-of-sight check (knight, pawn)
+          true # figures that dont need los check (knight, pawn)
         end
       end
 
       return true if is_in_check
     end
 
-    false # No check detected
+    false # no check detected
   end
-  
+
 end
