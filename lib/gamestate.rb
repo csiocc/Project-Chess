@@ -5,25 +5,32 @@ require_relative "check"
 #   for both colors. Next time.
 
 module Game_states
-  DEBUG = true
+  DEBUG = false
+  DEBUG2 = false
   #Gamestate management
   @selected_tile = nil
+  @pawn_to_promote = nil
 
  
   def self.selected_tile #getter method for other modules/classes
     @selected_tile
   end
 
+  def self.pawn_to_promote #getter method for other modules/classes
+    @pawn_to_promote
+  end
+
+
 ### Game State Methods ###
 
 # when :white_turn #select figure
-  def select_figure_white(clickd_tile, board, valid_figures = nil)
+  def self.select_figure_white(clickd_tile, board, valid_figures = nil)
     if clickd_tile.class == Array #emergency return if clicked right between 2 Tiles
       return {status: :white_turn}
     end
 
     in_check = !valid_figures.nil?
-    return_status = in_check ? :check_black : :black_turn
+    return_status = in_check ? :check_white : :white_turn
 
     if valid_figures.nil?
       valid_figures = board.white_figures
@@ -45,7 +52,7 @@ module Game_states
   end
 
 # when :select_target_tile_white #select target tile
-  def select_target_tile_white(clickd_tile, board)
+  def self.select_target_tile_white(clickd_tile, board)
     if clickd_tile.class == Array #emergency return if clicked right between 2 Tiles
       return {status: :select_target_tile_white}
     end
@@ -56,7 +63,10 @@ module Game_states
     is_valid_move = false
     is_capture = !clickd_tile.empty?
 
-    if figure.is_a?(King) && Valid_moves.valid_castle(figure.class, figure.current_tile.cords).include?(target_cords)
+
+
+    #castle rule
+    if figure.is_a?(King) && Valid_moves.valid_castle(figure.class, figure.current_tile.cords).include?(target_cords) 
       castle_result = Game_states.perform_castling(figure, target_cords, board)
       if castle_result[:error]
         p castle_result[:error] if DEBUG 
@@ -107,14 +117,20 @@ module Game_states
     if figure.is_a?(Pawn) && figure.first_move?
       figure.en_passant = true if figure.en_passant?(target_cords)
     end
-
     @selected_tile = nil
+    #pawn promotion rule
+    if figure.is_a?(Pawn_white) && target_cords[0] == 7
+      @pawn_to_promote = figure
+      return { status: :promote_pawn, color: "white" }
+    end
+
+    
     Game_states.reset_en_passant_black(board)
     return check_status("black", board)
   end
 
 # when :black_turn #select figure
-  def select_figure_black(clickd_tile, board, valid_figures = nil)
+  def self.select_figure_black(clickd_tile, board, valid_figures = nil)
     if clickd_tile.class == Array # emergency return if clicked right between 2 Tiles
       return {status: :black_turn}
     end
@@ -143,7 +159,7 @@ module Game_states
   end
 
 # when :select_target_tile_black #select target tile
-  def select_target_tile_black(clickd_tile, board)
+  def self.select_target_tile_black(clickd_tile, board)
     if clickd_tile.class == Array # emergency return if clicked right between 2 Tiles
       return {status: :select_target_tile_black}
     end
@@ -156,6 +172,9 @@ module Game_states
     is_valid_move = false
     is_capture = !clickd_tile.empty?
 
+
+
+    #castle rule
     if figure.is_a?(King) && Valid_moves.valid_castle(figure.class, figure.current_tile.cords).include?(target_cords)
       castle_result = Game_states.perform_castling(figure, target_cords, board)
       if castle_result[:error]
@@ -208,19 +227,27 @@ module Game_states
     if (figure.is_a?(Pawn_white) || figure.is_a?(Pawn_black)) && figure.first_move?
         figure.en_passant = true if figure.en_passant?(target_cords)
     end
-
     @selected_tile = nil
+    #pawn promotion rule
+    if figure.is_a?(Pawn_black) && target_cords[0] == 0
+      @pawn_to_promote = figure
+      return { status: :promote_pawn, color: "black" }
+    end
+
+    
     Game_states.reset_en_passant_white(board)
     return check_status("white", board)
   end
 
 
   # when :check
-  def check_status(color, board)
+  def self.check_status(color, board)
     legal_moves = []
     king = (color == "white") ? board.figures.find { |f| f.is_a?(King_white) } : board.figures.find { |f| f.is_a?(King_black) }
 
-    return {status: (color == "white") ? :check_white : :check_black, legal_moves: nil} unless Check.check?(king.current_tile.cords, board, color)
+    unless Check.check?(king.current_tile.cords, board, color)
+      return {status: (color == "white" ? :white_turn : :black_turn), legal_moves: []}
+    end
     
     figures_to_check = (color == "white") ? board.white_figures : board.black_figures
     enemy_color = (color == "white") ? "black" : "white"
@@ -242,6 +269,8 @@ module Game_states
           undo_info = board.move_simulation(figure, move_cords)
           if !Check.check?(king_pos_after_move, board, color)
             legal_moves << {figure: figure, from: current_cords, to: move_cords}
+          else
+            false
           end
           board.undo_simulation(undo_info)
         end      
@@ -256,12 +285,52 @@ module Game_states
     return check_info
   end
   
-  def reset_en_passant_white(board)
+  def self.reset_en_passant_white(board)
     board.en_passant_reset_white
   end
 
-  def reset_en_passant_black(board)
+  def self.reset_en_passant_black(board)
     board.en_passant_reset_black
+  end
+
+  #when :promote_pawn
+  def self.handle_promotion(clickd_tile, board)
+    pawn = self.pawn_to_promote
+    return {status: :error } unless pawn
+    color = pawn.color
+    p " handle_promotion called for pawn at #{pawn.current_tile.cords} and color = #{color}" if DEBUG2
+    p "clicked tile: #{clickd_tile.cords}, empty: #{clickd_tile.empty?}" if DEBUG2
+    return {status: :promote_pawn, color: color} if clickd_tile.empty? #return to self if empty tile clicked
+
+    chosen_figure =  clickd_tile.figure
+    p "chosen figure: #{chosen_figure.class} (color: #{chosen_figure.color})" if DEBUG2
+    #validation
+    
+    is_valid_choice = true
+    
+    if chosen_figure.color != color
+      p "Please chose a Figure of your color"
+      is_valid_choice = false
+      p "Validation failed: Wrong color" if DEBUG2
+    elsif chosen_figure.is_a?(King) || chosen_figure.is_a?(Pawn)
+      p "U cant promote King / Pawn"
+      is_valid_choice = false
+      p "validation failed: king or pawn" if DEBUG2
+    end
+
+    if is_valid_choice
+      #perform promotion if there is a valid choice
+      p "validation passed calling promote_pawn" if DEBUG2
+      chosen_class = chosen_figure.class
+      board.promote_pawn(pawn, chosen_class)
+      @pawn_to_promote = nil
+      next_color_to_check = (color == "white") ? "black" : "white"
+      result = self.check_status(next_color_to_check, board)
+      return result[:status] || (next_color_to_check + "_turn").to_sym
+    else
+      p "validation failed returning to promote_pawn state" if DEBUG2
+      return {status: :promote_pawn, color: color}
+    end
   end
 
   ### Helpermethods ###

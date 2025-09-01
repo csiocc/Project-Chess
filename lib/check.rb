@@ -2,7 +2,7 @@ require_relative "figures"
 require_relative "valid_moves"
 
 module Check
-  DEBUG = true
+  DEBUG = false
   include Valid_moves
 
   ### method to validate check ###

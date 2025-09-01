@@ -8,12 +8,13 @@ require_relative "queen"
 require_relative "king"
 require_relative "config"
 require_relative "valid_moves"
+require_relative "display_logger"
 require "ruby2d"
 
 ###Board Class creating the Board and storing Tiles and functions to access them###
 class Board
   include Config
-  attr_reader  :grid
+  attr_reader  :grid, :tiles, :white_storage, :black_storage, :buttons
   attr_accessor :figures, :white_storage, :black_storage, :white_figures, :black_figures
   DEBUG = false
   def initialize
@@ -60,6 +61,7 @@ class Board
     setup_storage
     setup_console_display
     setup_display_buttons
+    $stdout = DisplayLogger.new(@display[1])
   end
 
   def setup_storage
@@ -85,7 +87,7 @@ class Board
     display_top_tile = Tile.new
     display_top_tile.draw_cords = { x: Config.window_size + Config.border, y: (Config.window_size / 4) + Config.border }
     @display << display_top_tile
-    display_bot_tile = Tile.new
+    display_bot_tile = DisplayBotTile.new
     display_bot_tile.draw_cords = { x: Config.window_size + Config.border, y: ((Config.window_size / 4) * 2) + Config.border}
     @display << display_bot_tile
     @tiles << display_top_tile
@@ -102,10 +104,19 @@ class Board
         x = @display[0].draw_cords[:x] + (r * (Config.button_size[:width] + Config.border))
         y = @display[0].draw_cords[:y] + (c * (Config.button_size[:height] + Config.border))
         button.draw_cords = { x: x, y: y }
+
+        if r == 0 && c == 0
+          button.text = "Start"
+        elsif r == 1 && c == 0
+          button.text = "Reset"
+        end
         @buttons << button
       end
     end
+
   end
+
+
 
   def draw_board
     tile_size = Config.tile_size
@@ -245,6 +256,14 @@ class Board
     end
   end
 
+  def find_button(cords)
+    @buttons.each do |tile|
+      if tile.draw_cords[:x] < cords[:x] && tile.draw_cords[:x] + Config.tile_size > cords[:x] && tile.draw_cords[:y] < cords[:y] && tile.draw_cords[:y] + Config.tile_size > cords[:y]
+        return tile
+      end
+    end
+  end
+
   def reset
     @figures.each do |figure|
       figure.sprite.remove
@@ -346,8 +365,44 @@ class Board
     end
   end
 
+  def promote_pawn(pawn, choice_class)
+    tile = pawn.current_tile
+    color = pawn.color
+    #remove pawn
+    self.figures.delete(pawn)
+    if color == "white"
+      self.white_figures.delete(pawn)
+    else
+      self.black_figures.delete(pawn)
+    end
+    pawn.sprite.remove
+    #create new figure
+    new_figure = choice_class.new
+    tile.figure = new_figure
+    new_figure.current_tile = tile
+    @figures << new_figure
+    if color == "white"
+      @white_figures << new_figure
+    else
+      @black_figures << new_figure
+    end
+    new_figure.setup(tile)
+  end
+
+  def add_button(value)
+    tile = first_free(@buttons)
+    tile.display_value = value
+  end
 
   # Helpermethods #
+  
+  def first_free(array)
+    array.each do |tile|
+      if tile.empty?
+        return tile
+      end
+    end
+  end
 
   def add_figure(figure, cords)
     tile = @grid[cords[0]][cords[1]]

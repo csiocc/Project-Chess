@@ -3,10 +3,20 @@ module Config
   @TILE_SIZE = (@WINDOW_SIZE / 8)
   @ADD_WIDTH = (@WINDOW_SIZE / 4)
   @BORDER = (@ADD_WIDTH / 64)
+  @TEXT_SIZE = (@WINDOW_SIZE / 36)
+  @CONSOLE_TEXT_SIZE = (@WINDOW_SIZE / 45)
 
   #getter methods to access data
   def self.window_size 
     @WINDOW_SIZE
+  end
+
+  def self.console_text_size
+    @CONSOLE_TEXT_SIZE
+  end
+
+  def self.text_size
+    @TEXT_SIZE
   end
 
   def self.window_width
