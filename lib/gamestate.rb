@@ -121,6 +121,7 @@ module Game_states
     #pawn promotion rule
     if figure.is_a?(Pawn_white) && target_cords[0] == 7
       @pawn_to_promote = figure
+      p "Chose a Figure"
       return { status: :promote_pawn, color: "white" }
     end
 
@@ -231,6 +232,7 @@ module Game_states
     #pawn promotion rule
     if figure.is_a?(Pawn_black) && target_cords[0] == 0
       @pawn_to_promote = figure
+      p "Chose a Figure"
       return { status: :promote_pawn, color: "black" }
     end
 

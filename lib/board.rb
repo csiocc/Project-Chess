@@ -17,6 +17,7 @@ class Board
   attr_reader  :grid, :tiles, :white_storage, :black_storage, :buttons
   attr_accessor :figures, :white_storage, :black_storage, :white_figures, :black_figures
   DEBUG = false
+  DEBUG2 = true
   def initialize
     @grid = nil
     @tiles = []
@@ -109,6 +110,9 @@ class Board
           button.text = "Start"
         elsif r == 1 && c == 0
           button.text = "Reset"
+        elsif r == 1 && c == 3
+          button.text = "Exit"
+          p button if DEBUG2
         end
         @buttons << button
       end

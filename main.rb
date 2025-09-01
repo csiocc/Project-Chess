@@ -14,7 +14,7 @@ include Game_states
 include Highlight
 include Check  ####### ONLY FOR TEST####
 # debug option #
-DEBUG = false
+DEBUG = true
 DEBUG2 = false
 system 'clear'
 
@@ -48,7 +48,7 @@ on :key_down do |event|
 end
 
 update do
-  next unless @game_state == :white_turn || @game_state == :black_turn
+  next unless @game_state == :white_turn || @game_state == :black_turn || @game_state == :promote_pawn
 
   case @game_state
   when :white_turn
@@ -68,8 +68,8 @@ end
 on :mouse_down do |event|
   clickd_tile = test.find_tile({ x: event.x, y: event.y })
   next if clickd_tile.nil? #next if clicked outside of the board
+  clicked_button = test.find_button({ x: event.x, y: event.y }) 
 
-  clicked_button = nil
   if test.white_storage.include?(clickd_tile) || test.black_storage.include?(clickd_tile) || test.buttons.include?(clickd_tile)
     p "entering menu" if DEBUG
     clicked_button = test.find_button({ x: event.x, y: event.y })
@@ -124,6 +124,7 @@ on :mouse_down do |event|
       p "black wins!"
     when :menu
       if clicked_button
+        p "array" if clicked_button.is_a?(Array)
         next if clicked_button.is_a?(Array) 
         case clicked_button.text
         when "Reset"
@@ -134,6 +135,9 @@ on :mouse_down do |event|
           puts "Start"
           test.setup_figures
           @game_state = :white_turn
+        when "Exit"
+          p "Exiting"
+          close
         end
       end 
       @game_state = @last_game_state if @game_state == :menu
