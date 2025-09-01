@@ -59,7 +59,7 @@ describe Check do
       end
 
       it 'detects check by a pawn' do
-        board.grid[2][2].figure = Pawn_black.new
+        board.grid[4][2].figure = Pawn_black.new 
         expect(Check.check?(king_cords, board)).to be true
       end
     end
@@ -140,7 +140,7 @@ describe Check do
       it 'detects pawn check from the other attack square' do
         # From [3,3], a black pawn can attack from [2,2] or [2,4]
         # The other test covers [2,2], this one covers [2,4]
-        board.grid[2][4].figure = Pawn_black.new
+        board.grid[4][4].figure = Pawn_black.new
         expect(Check.check?(king_cords, board)).to be true
       end
 

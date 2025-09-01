@@ -15,6 +15,7 @@ include Highlight
 include Check  ####### ONLY FOR TEST####
 # debug option #
 DEBUG = true
+DEBUG2 = false
 system 'clear'
 
 # setup display window #
@@ -49,31 +50,40 @@ on :mouse_down do |event|
   clickd_tile = test.find_tile({ x: event.x, y: event.y })
   next if clickd_tile.nil? #next if clicked outside of the board
   
-  case @game_state
+  case @game_state || @game_state[:status]
     when :white_turn
-      @game_state = Game_states.select_figure_white(clickd_tile, test)
+      result = Game_states.select_figure_white(clickd_tile, test)
+      @game_state = result[:status]
       p "game state: #{@game_state}" if DEBUG
     when :select_target_tile_white
-      @game_state = Game_states.select_target_tile_white(clickd_tile, test)
+      result = Game_states.select_target_tile_white(clickd_tile, test)
+      p "result is : #{result}" if DEBUG2
+      @game_state = result[:status]
       p "game state: #{@game_state}" if DEBUG
       Game_states.reset_en_passant_black(test)
     when :black_turn
-      @game_state = Game_states.select_figure_black(clickd_tile, test)
+      result = Game_states.select_figure_black(clickd_tile, test)
+      @game_state = result[:status]
       p "game state: #{@game_state}" if DEBUG
     when :select_target_tile_black
-      @game_state = Game_states.select_target_tile_black(clickd_tile, test)
+      result = Game_states.select_target_tile_black(clickd_tile, test)
+      @game_state = result[:status]
       p "game state: #{@game_state}" if DEBUG
       Game_states.reset_en_passant_white(test)
     when :check_white
-      p "gamestate check white"
       result = Game_states.check_status("white", test)
-      @game_state = result[:check_info]
-      p "#{result[:legal_moves].length} legal moves found}"
+      valid_figures = result[:legal_moves].map { |move| move[:figure] }
+      new_result = Game_states.select_figure_white(clickd_tile, test, valid_figures)
+      @game_state = new_result[:status] if new_result
+      p "#{result[:legal_moves].length} legal moves found"
       puts result[:legal_moves]
     when :check_black
-      p "gamestate check black}"
-    when :check_black
-      p "gamestate check black"
+      result = Game_states.check_status("black", test)
+      valid_figures = result[:legal_moves].map { |move| move[:figure] }
+      new_result = Game_states.select_figure_black(clickd_tile, test, valid_figures)
+      @game_state = new_result[:status] if new_result
+      p "#{result[:legal_moves].length} legal moves found"
+      puts result[:legal_moves]
   end
   @highlight_square = Highlight.update_highlight
   

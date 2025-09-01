@@ -20,6 +20,28 @@ module Valid_moves
     @targets.dig(figure, cords) || []
   end
 
+  def self.attacker_source(figure_key, target_cords)
+    # for king, rook, bishop, queen and knight its the same as "targets"
+    symetrical_figures = ["king", "rook", "bishop", "queen", "knight"]
+    if symetrical_figures.include?(figure_key)
+      return self.targets(figure_key, target_cords)
+    end
+
+    #pawn
+    r, c = target_cords
+    attacker_tiles = []
+    case figure_key
+    when "wptake" #where is a white pawn to attack te target?
+      attacker_tiles.push([r - 1, c - 1], [r - 1, c + 1]) # must be above target tile
+    when "bptake" #where is a black pawn to attack te target?
+      attacker_tiles.push([r + 1, c - 1], [r + 1, c + 1]) # must be below target tile
+    end
+
+    #filter offboard clicked tiles
+    return self.valid(attacker_tiles)
+
+  end
+
   def self.valid_moves(figure_class, current_cords)
     if figure_class == King_white || figure_class == King_black
       return @targets["king"][current_cords]
