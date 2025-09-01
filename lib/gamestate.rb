@@ -56,6 +56,17 @@ module Game_states
     is_valid_move = false
     is_capture = !clickd_tile.empty?
 
+    if figure.is_a?(King) && Valid_moves.valid_castle(figure.class, figure.current_tile.cords).include?(target_cords)
+      castle_result = Game_states.perform_castling(figure, target_cords, board)
+      if castle_result[:error]
+        p castle_result[:error] if DEBUG 
+        return { status: :white_turn }
+      else
+        @selected_tile = nil
+        return castle_result
+      end
+    end
+
     if is_capture
       if clickd_tile.figure.color == "black" && figure.take_legal?(target_cords, figure.class, figure, board)
         is_valid_move = true
@@ -77,7 +88,7 @@ module Game_states
     king_pos_after_move = figure.is_a?(King) ? target_cords : king.current_tile.cords
     
     undo_info = board.move_simulation(figure, target_cords)
-    if Check.check?(king_pos_after_move, board)
+    if Check.check?(king_pos_after_move, board, "white")
       p "move denied because of check"
       board.undo_simulation(undo_info)
       return {status: :select_target_tile_white, valid_figures: []}
@@ -145,6 +156,17 @@ module Game_states
     is_valid_move = false
     is_capture = !clickd_tile.empty?
 
+    if figure.is_a?(King) && Valid_moves.valid_castle(figure.class, figure.current_tile.cords).include?(target_cords)
+      castle_result = Game_states.perform_castling(figure, target_cords, board)
+      if castle_result[:error]
+        p castle_result[:error] if DEBUG 
+        return { status: :black_turn }
+      else
+        @selected_tile = nil
+        return castle_result
+      end
+    end
+
     if is_capture
       if clickd_tile.figure.color == "white" && figure.take_legal?(target_cords, figure.class, figure, board)
         is_valid_move = true
@@ -167,7 +189,7 @@ module Game_states
     
     undo_info = board.move_simulation(figure, target_cords)
     
-    if Check.check?(king_pos_after_move, board)
+    if Check.check?(king_pos_after_move, board, "black")
       p "You can't make a move that leaves your king in check."
       board.undo_simulation(undo_info)
       return {status: :select_target_tile_black}
@@ -196,107 +218,44 @@ module Game_states
   # when :check
   def check_status(color, board)
     legal_moves = []
-    check_info = {status: nil, legal_moves: legal_moves}
+    king = (color == "white") ? board.figures.find { |f| f.is_a?(King_white) } : board.figures.find { |f| f.is_a?(King_black) }
+
+    return {status: (color == "white") ? :check_white : :check_black, legal_moves: nil} unless Check.check?(king.current_tile.cords, board, color)
     
-    case color
-    when "white"
-      king = board.figures.find { |f| f.is_a?(King_white) }
-      return {status: :white_turn, legal_moves: nil} unless Check.check?(king.current_tile.cords, board)
+    figures_to_check = (color == "white") ? board.white_figures : board.black_figures
+    enemy_color = (color == "white") ? "black" : "white"
 
-      p "check status white entered" if DEBUG
-      board.white_figures.each do |figure|
-        current_cords = figure.current_tile.cords
-        
-        # get all possible moves and takes for figure
-        candidate_moves = (
-          Valid_moves.valid_moves(figure.class, current_cords) +
-          Valid_moves.valid_takes(figure.class, current_cords)
-        ).uniq
+    figures_to_check.each do |figure|
+      current_cords = figure.current_tile.cords
+      valid_moves = (Valid_moves.valid_moves(figure.class, current_cords) + Valid_moves.valid_takes(figure.class, current_cords)).uniq
 
-        candidate_moves.each do |move_cords|
- 
-          # next unless move_cords[0].between?(0, 7) && move_cords[1].between?(0, 7)
-          
-          target_tile = board.grid[move_cords[0]][move_cords[1]]
-
-          is_valid_move = false
-          if target_tile.empty?
-            # if its a move check for valid_move?
-            is_valid_move = figure.valid_move?(move_cords)
-          elsif target_tile.figure.color == "black"
-            # if its a take check for take_legal?
-            is_valid_move = figure.take_legal?(move_cords, figure.class, figure, board)
-          end
-
-          # check los
-          if is_valid_move && Valid_moves.los(current_cords, move_cords, board)
-            king_pos_after_move = figure.is_a?(King) ? move_cords : king.current_tile.cords
-            undo_info = board.move_simulation(figure, move_cords)
-
-            if !Check.check?(king_pos_after_move, board)
-              legal_moves << { figure: figure, from: current_cords, to: move_cords }
-            end
-            board.undo_simulation(undo_info)
-          end
+      valid_moves.each do |move_cords|
+        target_tile = board.grid[move_cords[0]][move_cords[1]]
+        if target_tile.empty?
+          is_valid_move = figure.valid_move?(move_cords)
+        elsif target_tile.figure.color == enemy_color
+          is_valid_move = figure.take_legal?(move_cords, figure.class, figure, board)
         end
-      end
       
-      if legal_moves.empty?
-        check_info = {status: :check_mate_white, legal_moves: legal_moves}
-      else
-        check_info = {status: :check_white, legal_moves: legal_moves}
-      end
-
-    when "black"
-      king = board.figures.find { |f| f.is_a?(King_black) }
-      return {status: :black_turn, legal_moves: nil} unless Check.check?(king.current_tile.cords, board)
-
-      p "check status black entered" if DEBUG
-      board.black_figures.each do |figure|
-        current_cords = figure.current_tile.cords
-
-        candidate_moves = (
-          Valid_moves.valid_moves(figure.class, current_cords) +
-          Valid_moves.valid_takes(figure.class, current_cords)
-        ).uniq
-
-        candidate_moves.each do |move_cords|
-          next unless move_cords[0].between?(0, 7) && move_cords[1].between?(0, 7)
-
-          target_tile = board.grid[move_cords[0]][move_cords[1]]
-
-          is_valid_move = false
-          if target_tile.empty?
-            is_valid_move = figure.valid_move?(move_cords)
-          elsif target_tile.figure.color == "white"
-            is_valid_move = figure.take_legal?(move_cords, figure.class, figure, board)
+        if is_valid_move && Valid_moves.los(current_cords, move_cords, board)
+          king_pos_after_move = figure.is_a?(King) ? move_cords : king.current_tile.cords
+          undo_info = board.move_simulation(figure, move_cords)
+          if !Check.check?(king_pos_after_move, board, color)
+            legal_moves << {figure: figure, from: current_cords, to: move_cords}
           end
-
-          if is_valid_move && Valid_moves.los(current_cords, move_cords, board)
-            king_pos_after_move = figure.is_a?(King) ? move_cords : king.current_tile.cords
-            undo_info = board.move_simulation(figure, move_cords)
-            if !Check.check?(king_pos_after_move, board)
-              legal_moves << { figure: figure, from: current_cords, to: move_cords }
-            end
-            board.undo_simulation(undo_info)
-          end
-        end
-      end
-
-      p "legal moves are: #{legal_moves}" if DEBUG
-      if legal_moves.empty?
-        check_info = {status: :check_mate_black, legal_moves: legal_moves}
-      else
-        check_info = {status: :check_black, legal_moves: legal_moves}
+          board.undo_simulation(undo_info)
+        end      
       end
     end
-    
+
+    if legal_moves.empty?
+      check_info = {status: (color == "white" ? :check_mate_white : :check_mate_black), legal_moves: legal_moves}
+    else
+      check_info = {status: (color == "white" ? :check_white : :check_black), legal_moves: legal_moves}
+    end
     return check_info
   end
   
-
-  ### Helpermethods ###
-
   def reset_en_passant_white(board)
     board.en_passant_reset_white
   end
@@ -305,22 +264,65 @@ module Game_states
     board.en_passant_reset_black
   end
 
-  def check_status_white(white_king_pos, board)
-    if Check.check?(white_king_pos, board)
-      return :check_white
-    else
-      return :white_turn
-    end
-  end
+  ### Helpermethods ###
 
-  def check_status_black(black_king_pos, board)
-    if Check.check?(black_king_pos, board)
-      p "check black true. Kingpos is:#{black_king_pos}" if DEBUG
-      return :check_black
-    else
-      p "check black false. Kingpos is:#{black_king_pos}" if DEBUG
-      return :black_turn
+  private
+
+  def self.perform_castling(king, target_cords, board)
+    #rule 1 kings first move
+    return {error: "King has allready moved"} unless king.first_move?
+    #rule 2 king is not in check
+    return {error: "U cant castle out of check"} if Check.check?(king.current_tile.cords, board, king.color)
+
+    # wich castle, king or queen side?
+    king_side = target_cords[1] == 6
+    queen_side = target_cords[1] == 2
+
+    return {error: "Invalid castle target"} unless king_side || queen_side
+
+    # wich rook, rooks path and rooks destination based on color and side
+    if king.color == "white"
+      row = 0
+      rook_c = king_side ? 7 : 0
+      path_c = king_side ? [5, 6] : [1, 2, 3]
+      tiles_to_check = king_side ? [5, 6] : [2, 3]
+      rook_destination_c = king_side ? 5 : 3
+    else #for black king
+      row = 7
+      rook_c = king_side ? 7 : 0
+      path_c = king_side ? [5, 6] : [1, 2, 3]
+      tiles_to_check = king_side ? [5, 6] : [2, 3]
+      rook_destination_c = king_side ? 5 : 3
     end
+
+    rook_tile = board.grid[row][rook_c]
+    rook = rook_tile.figure
+
+    #rule 3 rook must exist and its first move
+    return {error: "Rook has allready moved or is not in the right position"} unless rook && rook.first_move?
+
+    #rule 4 path between king and rook is not blocked
+    path_c.each do |c|
+      unless board.grid[row][c].empty?
+        return {error: "Path is blocked u cant castle"}
+      end
+    end
+    
+    #rule 5 king does not pass through check
+    tiles_to_check.each do |c|
+      if Check.check?([row, c], board, king.color)
+        return {error: "U cant castle through check"}
+      end
+    end
+
+    # all checks passed
+    king.move(board.grid[row][target_cords[1]], board)
+    rook.move(board.grid[row][rook_destination_c], board)
+
+    #returning success and next gamestate
+    
+    next_turn = king.color == "white" ? :black_turn : :white_turn
+    return {status: next_turn}
   end
 
 
