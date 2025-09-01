@@ -293,7 +293,6 @@ class Board
   def move_simulation(figure, target_cords)
     current_tile = figure.current_tile
     target_tile = self.grid[target_cords[0]][target_cords[1]]
-    
     taken_figure = target_tile.figure
 
     #storing states to undo the move#
@@ -305,18 +304,22 @@ class Board
       was_first_move: figure.respond_to?(:first_move) ? figure.first_move : nil
     }
 
-    #move
     target_tile.figure = figure
     current_tile.figure = nil
     figure.current_tile = target_tile
-
-    #update figure states
     figure.first_move = false if figure.respond_to?(:first_move)
     
-    #remove taken figures
-    self.figures.delete(taken_figure) if taken_figure
+    if taken_figure
+      self.figures.delete(taken_figure) if taken_figure
+      if taken_figure.color == "white"
+        self.white_figures.delete(taken_figure)
+      else
+        self.black_figures.delete(taken_figure)
+      end
+    end
 
     return undo_info
+
   end
 
   def undo_simulation(undo_info)
@@ -329,14 +332,47 @@ class Board
     #undo the move
     current_tile.figure = moved_figure
     moved_figure.current_tile = current_tile
-    
-    #restore figure states
     moved_figure.first_move = was_first_move if moved_figure.respond_to?(:first_move)
     
     #restore taken figures
     target_tile.figure = taken_figure
-    self.figures << taken_figure if taken_figure
-
+    if taken_figure
+      self.figures << taken_figure
+      if taken_figure.color == "white"
+        self.white_figures << taken_figure
+      else
+        self.black_figures << taken_figure
+      end
+    end
   end
+
+
+  # Helpermethods #
+
+  def add_figure(figure, cords)
+    tile = @grid[cords[0]][cords[1]]
+    tile.figure = figure
+    figure.current_tile = tile
+    @figures << figure
+    if figure.color == "white"
+      @white_figures << figure
+    else
+      @black_figures << figure
+    end
+  end
+
+  def move_figure(from_cords, to_cords)
+    from_tile = @grid[from_cords[0]][from_cords[1]]
+    to_tile = @grid[to_cords[0]][to_cords[1]]
+    figure = from_tile.figure
+
+    return unless figure #do nothing if there is no figure to move
+    
+    from_tile.figure = nil
+    to_tile.figure = figure
+    figure.current_tile = to_tile
+  end
+
+
 
 end

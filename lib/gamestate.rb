@@ -230,8 +230,10 @@ module Game_states
 
           # check los
           if is_valid_move && Valid_moves.los(current_cords, move_cords, board)
+            king_pos_after_move = figure.is_a?(King) ? move_cords : king.current_tile.cords
             undo_info = board.move_simulation(figure, move_cords)
-            if !Check.check?(king.current_tile.cords, board)
+
+            if !Check.check?(king_pos_after_move, board)
               legal_moves << { figure: figure, from: current_cords, to: move_cords }
             end
             board.undo_simulation(undo_info)
@@ -271,8 +273,9 @@ module Game_states
           end
 
           if is_valid_move && Valid_moves.los(current_cords, move_cords, board)
+            king_pos_after_move = figure.is_a?(King) ? move_cords : king.current_tile.cords
             undo_info = board.move_simulation(figure, move_cords)
-            if !Check.check?(king.current_tile.cords, board)
+            if !Check.check?(king_pos_after_move, board)
               legal_moves << { figure: figure, from: current_cords, to: move_cords }
             end
             board.undo_simulation(undo_info)

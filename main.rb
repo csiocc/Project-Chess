@@ -84,7 +84,12 @@ on :mouse_down do |event|
       @game_state = new_result[:status] if new_result
       p "#{result[:legal_moves].length} legal moves found"
       puts result[:legal_moves]
+    when :check_mate_black
+      p "white wins!"
+    when :check_mate_white
+      p "black wins!"
   end
+  
   @highlight_square = Highlight.update_highlight
   
 end

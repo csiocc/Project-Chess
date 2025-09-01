@@ -23,28 +23,10 @@ class Figures
     false
   end
 
+
   def take_legal?(cords, figure_class, figure, board)
     current_cords = @current_tile.cords
-    if Valid_moves.valid_takes(figure_class, current_cords).include?(cords)
-      return true
-    elsif figure_class == Pawn_white || figure_class == Pawn_black  #if pawn check for en_passant take
-      p "Valid takes = #{Valid_moves.valid_takes(figure_class, current_cords)}" if DEBUG
-      p "cords = #{cords}" if DEBUG
-      cords if DEBUG
-      if Valid_moves.valid_takes(figure_class, current_cords).include?(cords) 
-        possibility_one = board.grid[current_cords[0], (current_cords[1] + 1)]
-        possibility_two = board.grid[current_cords[0],(current_cords[1] - 1)]
-        if possibility_one.class == Array || possibility_two.class == Array
-          return false
-        elsif possibility_two.figure == Pawn_white || possibility_two.figure == Pawn_black
-          return true
-        end
-        return true
-      end
-    else
-      return true if valid_move?(cords)
-    end
-    false
+    return Valid_moves.valid_takes(figure_class, current_cords).include?(cords)
   end
 
   def move_line_clear?(target_cords, board)
