@@ -39,10 +39,10 @@ module Game_states
     unless clickd_tile.empty? #if clicked outside of the board
       if clickd_tile.figure.color == "white" && valid_figures.include?(clickd_tile.figure)
         @selected_tile = clickd_tile
-        p "#{clickd_tile.figure.class} selected"
+        p "#{clickd_tile.figure.class} selected" if DEBUG
         return {status: :select_target_tile_white}
       elsif clickd_tile.figure.color == "black"
-        p "falsche farbe"
+        p "Wrong Color"
         return {status: :white_turn} #return to self
       end
     else
@@ -146,14 +146,14 @@ module Game_states
     unless clickd_tile.empty? # if clicked outside of the board
       if clickd_tile.figure.color == "black" && valid_figures.include?(clickd_tile.figure)
         @selected_tile = clickd_tile
-        p "#{clickd_tile.figure.class} selected"
+        p "#{clickd_tile.figure.class} selected" if DEBUG
         return {status: :select_target_tile_black}
       elsif clickd_tile.figure.color == "white"
-        p "falsche farbe"
+        p "Wrong color"
         return {status: :black_turn} # return to self
       end
     else
-      p "Empty tile clicked, chose a Figure!"
+      p "Empty tile clicked"
       return {status: return_status} # return to self
     end
   end

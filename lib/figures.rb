@@ -126,7 +126,7 @@ class Figures
         figure.sprite.x = target.draw_cords[:x]
         figure.sprite.y = target.draw_cords[:y]
         move_to_storage(target_figure, board)
-        p "figure moved to storage, storage is now: #{board.white_storage}"
+        p "figure moved to storage, storage is now: #{board.white_storage}" if DEBUG
       else
         p "illegal take"
       end

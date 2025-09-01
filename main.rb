@@ -30,7 +30,7 @@ Valid_moves.build_targets
 
 
 # game state variables #
-@game_state = :white_turn
+@game_state = :menu
 @highlight_square = nil #highlight square to highlight selected figure
 @last_game_state = nil
 
@@ -43,22 +43,41 @@ on :key_down do |event|
     test = nil
     test = Board.new
     test.setup_figures
-    @game_state = :white_turn
+    @game_state = :menu
+  end
+end
+
+update do
+  next unless @game_state == :white_turn || @game_state == :black_turn
+
+  case @game_state
+  when :white_turn
+    if @last_displayed_turn != :white
+      puts "White Turn"
+      @last_displayed_turn = :white
+    end
+  when :black_turn
+    if @last_displayed_turn != :black
+      puts "Black Turn"
+      @last_displayed_turn = :black
+    end
   end
 end
 
 # mouse events #
 on :mouse_down do |event|
   clickd_tile = test.find_tile({ x: event.x, y: event.y })
-  p clickd_tile if DEBUG
   next if clickd_tile.nil? #next if clicked outside of the board
 
+  clicked_button = nil
   if test.white_storage.include?(clickd_tile) || test.black_storage.include?(clickd_tile) || test.buttons.include?(clickd_tile)
     p "entering menu" if DEBUG
     clicked_button = test.find_button({ x: event.x, y: event.y })
     @last_game_state = @game_state if @last_game_state.nil?
     @game_state = :menu
   end
+
+  
 
   case @game_state.is_a?(Hash) ? @game_state[:status] : @game_state
     when :white_turn
@@ -69,7 +88,7 @@ on :mouse_down do |event|
       p "game state: #{@game_state}" if DEBUG
     when :select_target_tile_white
       result = Game_states.select_target_tile_white(clickd_tile, test)
-      p "result is : #{result}" if DEBUG2
+      puts "result is : #{result}" if DEBUG2
       @game_state = result[:status]
       p "game state: #{@game_state}" if DEBUG
       Game_states.reset_en_passant_black(test)
@@ -98,20 +117,26 @@ on :mouse_down do |event|
       new_result = Game_states.select_figure_black(clickd_tile, test, valid_figures)
       @game_state = new_result[:status] if new_result
       p "#{result[:legal_moves].length} legal moves found"
-      puts result[:legal_moves]
+      p result[:legal_moves]
     when :check_mate_black
       p "white wins!"
     when :check_mate_white
       p "black wins!"
     when :menu
-      if clicked_button.text == "Reset"
-          test = nil
+      if clicked_button
+        next if clicked_button.is_a?(Array) 
+        case clicked_button.text
+        when "Reset"
+          puts "Reset"
           test = Board.new
+          @game_state = :menu 
+        when "Start"
+          puts "Start"
+          test.setup_figures
           @game_state = :white_turn
-      elsif clicked_button.text == "Start"
-        test.setup_figures
-      end
-      @game_state = @last_game_state
+        end
+      end 
+      @game_state = @last_game_state if @game_state == :menu
       @last_game_state = nil
   end
   
