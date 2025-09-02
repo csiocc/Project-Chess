@@ -16,7 +16,7 @@ class Board
   include Config
   attr_reader  :grid, :tiles, :white_storage, :black_storage, :buttons
   attr_accessor :figures, :white_storage, :black_storage, :white_figures, :black_figures
-  DEBUG = false
+  DEBUG = true
   DEBUG2 = true
   def initialize
     @grid = nil
@@ -96,29 +96,39 @@ class Board
   end
 
   def setup_display_buttons
-    2.times do |r|
-      4.times do |c|
+    4.times do |row|
+      2.times do |col|
         button = Tile.new
-        p " r = #{r} and c = #{c}" if DEBUG
-        p " r #{r} * #{Config.button_size[:width]}" if DEBUG
-        p " c #{c} * #{Config.button_size[:height]}" if DEBUG
-        x = @display[0].draw_cords[:x] + (r * (Config.button_size[:width] + Config.border))
-        y = @display[0].draw_cords[:y] + (c * (Config.button_size[:height] + Config.border))
-        button.draw_cords = { x: x, y: y }
+        x = @display[0].draw_cords[:x] + (col * (Config.button_size[:width] + Config.border))
+        y = @display[0].draw_cords[:y] + (row * (Config.button_size[:height] + Config.border))
+        button.draw_cords = {
+                              x: x + Config.border,
+                              y: y + Config.border,
+                              width: Config.button_size[:width],
+                              height: Config.button_size[:height]
+                            }
 
-        if r == 0 && c == 0
+        case [row, col]
+        when [0, 0]
           button.text = "Start"
-        elsif r == 1 && c == 0
+        when [0, 1]
           button.text = "Reset"
-        elsif r == 1 && c == 3
+        when [1, 0]
+          button.text = "Save"
+        when [1, 1]
+          button.text = "Load"
+        when [3, 1]
           button.text = "Exit"
-          p button if DEBUG2
         end
+        p "Button at row=#{row}, col=#{col} text=#{button.text} cords: #{button.draw_cords}" if DEBUG
         @buttons << button
       end
     end
-
   end
+
+
+
+
 
 
 
@@ -151,7 +161,6 @@ class Board
       Rectangle.new(x: @display[1].draw_cords[:x], y: @display[1].draw_cords[:y], width: display_tile_size[:width], height: display_tile_size[:height], color: 'gray')
     # draw display buttons
     @buttons.each do |button|
-      p "button cords = #{button.draw_cords}" if DEBUG
       button.add
     end
   end
@@ -253,18 +262,19 @@ class Board
   end
 
   def find_tile(cords)
-    @tiles.each do |tile|
-      if tile.draw_cords[:x] < cords[:x] && tile.draw_cords[:x] + Config.tile_size > cords[:x] && tile.draw_cords[:y] < cords[:y] && tile.draw_cords[:y] + Config.tile_size > cords[:y]
-        return tile
-      end
+    @tiles.find do |tile|
+      (tile.draw_cords[:x]...(tile.draw_cords[:x] + Config.tile_size)).cover?(cords[:x]) &&
+      (tile.draw_cords[:y]...(tile.draw_cords[:y] + Config.tile_size)).cover?(cords[:y])
     end
   end
 
   def find_button(cords)
-    @buttons.each do |tile|
-      if tile.draw_cords[:x] < cords[:x] && tile.draw_cords[:x] + Config.tile_size > cords[:x] && tile.draw_cords[:y] < cords[:y] && tile.draw_cords[:y] + Config.tile_size > cords[:y]
-        return tile
-      end
+    @buttons.find do |btn|
+      width  = btn.draw_cords[:width]  || Config.button_size[:width]
+      height = btn.draw_cords[:height] || Config.button_size[:height]
+
+      (btn.draw_cords[:x]...(btn.draw_cords[:x] + width)).cover?(cords[:x]) &&
+      (btn.draw_cords[:y]...(btn.draw_cords[:y] + height)).cover?(cords[:y])
     end
   end
 
@@ -432,6 +442,72 @@ class Board
     figure.current_tile = to_tile
   end
 
+  def save_value
+    {
+      figures: @figures.map { |f|
+        row, col = f.current_tile.cords
+        h = { type: f.class.name, row: row, col: col }
+        h[:first_move]  = f.first_move  if f.respond_to?(:first_move)
+        h[:en_passant]  = f.en_passant  if f.respond_to?(:en_passant)
+        h
+      }
+    }
+  end
 
+  def to_json(*_args)
+    JSON.pretty_generate(save_value)
+  end
+
+def self.from_json(json_string)
+    data = JSON.parse(json_string, symbolize_names: true)
+    raise ArgumentError, "invalid save format" unless data.is_a?(Hash) && data[:figures].is_a?(Array)
+
+    # Neues Board mit korrektem Layout/UI erstellen
+    board = new
+
+    # Bestehende (evtl. default) Figuren entfernen
+
+
+    data[:figures].each do |f|
+      type = f[:type] || f["type"]
+      row  = f[:row]  || f["row"]
+      col  = f[:col]  || f["col"]
+
+      # Klasse auflösen und Figur erzeugen
+      klass = Object.const_get(type)
+      fig   = klass.new
+
+      # Aufs Ziel-Field setzen (ohne Doppeldraws)
+      tile = board.grid[row][col]
+      fig.current_tile = tile
+      tile.figure      = fig
+
+      # optionale Zustände wiederherstellen
+      fig.first_move = f[:first_move] if f.key?(:first_move) && fig.respond_to?(:first_move=)
+      fig.en_passant = f[:en_passant] if f.key?(:en_passant) && fig.respond_to?(:en_passant=)
+
+      # Sprite / Darstellung initialisieren
+      fig.setup(tile)
+
+      # Collections pflegen
+      board.figures << fig
+      if fig.color == "white"
+        board.white_figures << fig
+      else
+        board.black_figures << fig
+      end
+    end
+
+    board
+  end
+
+  def clear_all_figures!
+    @figures.each { |f| f.sprite.remove if f.respond_to?(:sprite) && f.sprite }
+    @tiles.each   { |t| t.figure = nil }
+
+    @figures.clear
+    @white_figures.clear
+    @black_figures.clear
+  end
 
 end

@@ -5,6 +5,7 @@ require_relative "lib/config"
 require_relative "lib/tile"
 require_relative "lib/highlight"
 require_relative "lib/check" ####### ONLY FOR TEST####
+require_relative "lib/save"
 # display gem #
 require "ruby2d"
 ### modules ###
@@ -66,19 +67,15 @@ end
 
 # mouse events #
 on :mouse_down do |event|
+  save_value = test.to_json
   clickd_tile = test.find_tile({ x: event.x, y: event.y })
-  next if clickd_tile.nil? #next if clicked outside of the board
   clicked_button = test.find_button({ x: event.x, y: event.y }) 
-
-  if test.white_storage.include?(clickd_tile) || test.black_storage.include?(clickd_tile) || test.buttons.include?(clickd_tile)
+  if test.white_storage.include?(clickd_tile) || test.black_storage.include?(clickd_tile) || test.buttons.include?(clicked_button)
     p "entering menu" if DEBUG
-    clicked_button = test.find_button({ x: event.x, y: event.y })
     @last_game_state = @game_state if @last_game_state.nil?
     @game_state = :menu
   end
-
   
-
   case @game_state.is_a?(Hash) ? @game_state[:status] : @game_state
     when :white_turn
       result = Game_states.select_figure_white(clickd_tile, test)
@@ -123,14 +120,17 @@ on :mouse_down do |event|
     when :check_mate_white
       p "black wins!"
     when :menu
+      p "clicked button is #{clicked_button} text is #{clicked_button&.text}" if DEBUG
       if clicked_button
+        p "clicked button is #{clicked_button} text is #{clicked_button.text}" if DEBUG
         p "array" if clicked_button.is_a?(Array)
-        next if clicked_button.is_a?(Array) 
+        next if clicked_button.is_a?(Array)
+
         case clicked_button.text
         when "Reset"
           puts "Reset"
           test = Board.new
-          @game_state = :menu 
+          @game_state = :menu
         when "Start"
           puts "Start"
           test.setup_figures
@@ -138,11 +138,20 @@ on :mouse_down do |event|
         when "Exit"
           p "Exiting"
           close
+        when "Save"
+          p "Save"
+          SaveGame.save("Save", test.to_json)
+        when "Load"
+          p "Load"
+          loaded = SaveGame.load("Save")
+          test = loaded
         end
-      end 
+      
+      end
       @game_state = @last_game_state if @game_state == :menu
       @last_game_state = nil
   end
+
   
   @highlight_square = Highlight.update_highlight
   

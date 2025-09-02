@@ -24,9 +24,7 @@ class Tile
 
   def add
     p "button add called with, width:#{Config.button_size[:width]} and height: #{Config.button_size[:height]} and border: #{Config.border}" if DEBUG
-    rectangle = Rectangle.new(x: (@draw_cords[:x] + Config.border), y: (@draw_cords[:y] + Config.border), height: Config.button_size[:height], width: Config.button_size[:width], color: 'white')
-    self.draw_cords[:height] = Config.button_size[:height]
-    self.draw_cords[:width] = Config.button_size[:width]
+    rectangle = Rectangle.new(x: @draw_cords[:x], y: @draw_cords[:y], height: @draw_cords[:height], width: @draw_cords[:width], color: 'white')
     if @text
       text = Text.new(@text, size: Config.text_size, color: 'black')
       text_cords = text_center_cords(rectangle, text.width, text.height)
@@ -37,17 +35,17 @@ class Tile
 
   # Helpermethods#
   
+  private
+
   def text_center_cords(rectangle, text_width, text_height)
     rect_x = self.draw_cords[:x]
     rect_y = self.draw_cords[:y]
     rect_w = self.draw_cords[:width]
     rect_h = self.draw_cords[:height]
 
-    # Mittelpunkt vom Rechteck
     center_x = rect_x + rect_w / 2.0
     center_y = rect_y + rect_h / 2.0
 
-    # Text so verschieben, dass er mittig ist
     text_x = center_x - text_width / 2.0
     text_y = center_y - text_height / 2.0
 
