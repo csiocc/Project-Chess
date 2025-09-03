@@ -1,5 +1,5 @@
 module Config
-  @WINDOW_SIZE = 512
+  @WINDOW_SIZE = 1024
   @TILE_SIZE = (@WINDOW_SIZE / 8)
   @ADD_WIDTH = (@WINDOW_SIZE / 4)
   @BORDER = (@ADD_WIDTH / 64)

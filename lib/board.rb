@@ -15,9 +15,9 @@ require "ruby2d"
 class Board
   include Config
   attr_reader  :grid, :tiles, :white_storage, :black_storage, :buttons
-  attr_accessor :figures, :white_storage, :black_storage, :white_figures, :black_figures
-  DEBUG = true
-  DEBUG2 = true
+  attr_accessor :figures, :white_storage, :black_storage, :white_figures, :black_figures, :save_game_state
+  DEBUG = false
+  DEBUG2 = false
   def initialize
     @grid = nil
     @tiles = []
@@ -30,6 +30,7 @@ class Board
     @buttons = []
     @white_figures = []
     @black_figures = []
+    @save_game_state = nil
     setup
     draw_board
   end
@@ -328,22 +329,19 @@ class Board
     target_tile = self.grid[target_cords[0]][target_cords[1]]
     taken_figure = target_tile.figure
 
-    #storing states to undo the move#
     undo_info = {
-      moved_figure: figure,
-      current_tile: current_tile,
-      target_tile: target_tile,
-      taken_figure: taken_figure,
-      was_first_move: figure.respond_to?(:first_move) ? figure.first_move : nil
+      figure: figure,
+      from: current_tile,
+      to: target_tile,
+      taken_figure: taken_figure
     }
 
-    target_tile.figure = figure
     current_tile.figure = nil
+    target_tile.figure = figure
     figure.current_tile = target_tile
-    figure.first_move = false if figure.respond_to?(:first_move)
-    
+
     if taken_figure
-      self.figures.delete(taken_figure) if taken_figure
+      self.figures.delete(taken_figure)
       if taken_figure.color == "white"
         self.white_figures.delete(taken_figure)
       else
@@ -352,23 +350,18 @@ class Board
     end
 
     return undo_info
-
   end
 
   def undo_simulation(undo_info)
-    moved_figure = undo_info[:moved_figure]
-    current_tile = undo_info[:current_tile]
-    target_tile = undo_info[:target_tile]
+    figure = undo_info[:figure]
+    from_tile = undo_info[:from]
+    to_tile = undo_info[:to]
     taken_figure = undo_info[:taken_figure]
-    was_first_move = undo_info[:was_first_move]
 
-    #undo the move
-    current_tile.figure = moved_figure
-    moved_figure.current_tile = current_tile
-    moved_figure.first_move = was_first_move if moved_figure.respond_to?(:first_move)
-    
-    #restore taken figures
-    target_tile.figure = taken_figure
+    to_tile.figure = taken_figure
+    from_tile.figure = figure
+    figure.current_tile = from_tile
+
     if taken_figure
       self.figures << taken_figure
       if taken_figure.color == "white"
@@ -443,10 +436,11 @@ class Board
   end
 
   def save_value
-    {
+    { game_state: @save_game_state, 
       figures: @figures.map { |f|
-        row, col = f.current_tile.cords
-        h = { type: f.class.name, row: row, col: col }
+        cords = f.current_tile.cords
+        p "cords loaded: #{cords}"
+        h = { type: f.class.name, cords: cords  }
         h[:first_move]  = f.first_move  if f.respond_to?(:first_move)
         h[:en_passant]  = f.en_passant  if f.respond_to?(:en_passant)
         h
@@ -458,38 +452,24 @@ class Board
     JSON.pretty_generate(save_value)
   end
 
-def self.from_json(json_string)
+  def self.from_json(json_string)
     data = JSON.parse(json_string, symbolize_names: true)
     raise ArgumentError, "invalid save format" unless data.is_a?(Hash) && data[:figures].is_a?(Array)
 
-    # Neues Board mit korrektem Layout/UI erstellen
-    board = new
-
-    # Bestehende (evtl. default) Figuren entfernen
-
-
+    board = Board.new
     data[:figures].each do |f|
       type = f[:type] || f["type"]
-      row  = f[:row]  || f["row"]
-      col  = f[:col]  || f["col"]
-
-      # Klasse auflösen und Figur erzeugen
+      cords = f[:cords]
       klass = Object.const_get(type)
       fig   = klass.new
+      tile = board.grid[cords[0]][cords[1]]
 
-      # Aufs Ziel-Field setzen (ohne Doppeldraws)
-      tile = board.grid[row][col]
       fig.current_tile = tile
-      tile.figure      = fig
-
-      # optionale Zustände wiederherstellen
+      tile.setup_figure(fig)
       fig.first_move = f[:first_move] if f.key?(:first_move) && fig.respond_to?(:first_move=)
       fig.en_passant = f[:en_passant] if f.key?(:en_passant) && fig.respond_to?(:en_passant=)
-
-      # Sprite / Darstellung initialisieren
-      fig.setup(tile)
-
-      # Collections pflegen
+      fig.setup(tile) # setup sprites to draw figures
+      #update collections 
       board.figures << fig
       if fig.color == "white"
         board.white_figures << fig
@@ -497,17 +477,8 @@ def self.from_json(json_string)
         board.black_figures << fig
       end
     end
-
-    board
-  end
-
-  def clear_all_figures!
-    @figures.each { |f| f.sprite.remove if f.respond_to?(:sprite) && f.sprite }
-    @tiles.each   { |t| t.figure = nil }
-
-    @figures.clear
-    @white_figures.clear
-    @black_figures.clear
+    @save_game_state = data[:game_state].to_sym
+    [board, data[:game_state]]
   end
 
 end

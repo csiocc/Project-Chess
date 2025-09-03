@@ -67,8 +67,9 @@ end
 
 # mouse events #
 on :mouse_down do |event|
-  save_value = test.to_json
   clickd_tile = test.find_tile({ x: event.x, y: event.y })
+  p "clicked tile is #{clickd_tile}" if DEBUG && clickd_tile
+  p "current figure is #{clickd_tile.figure}" if DEBUG && clickd_tile
   clicked_button = test.find_button({ x: event.x, y: event.y }) 
   if test.white_storage.include?(clickd_tile) || test.black_storage.include?(clickd_tile) || test.buttons.include?(clicked_button)
     p "entering menu" if DEBUG
@@ -140,11 +141,15 @@ on :mouse_down do |event|
           close
         when "Save"
           p "Save"
+          test.save_game_state = @last_game_state ? @last_game_state : @game_state
           SaveGame.save("Save", test.to_json)
         when "Load"
           p "Load"
           loaded = SaveGame.load("Save")
-          test = loaded
+          test = loaded[0]
+          @game_state = loaded[1].to_sym
+          p @game_state
+          test.save_game_state = nil
         end
       
       end

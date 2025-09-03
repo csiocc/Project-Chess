@@ -7,20 +7,30 @@ module SaveGame
     f.write "#{save_value}"
     f.close
 
-    if File.exist? "saves/#{save_name}.json"
-      p "name allready exist"
-    else
-      File.rename 'saves/tempfile', "saves/#{save_name}.json"
+    file_path = "saves/#{save_name}.json"
+
+    # bis 7 Varianten prüfen
+    (0..8).each do |i|
+      new_save_name = i.zero? ? save_name : "#{save_name}#{i}"
+      file_path = "saves/#{new_save_name}.json"
+
+      unless File.exist?(file_path)
+        save_name = new_save_name
+        break
+      end
+    end
+      
+    File.rename 'saves/tempfile', "saves/#{save_name}.json"
       if File.exist? "saves/#{save_name}.json" # checks if save_name allready exists and return successful if yes
         p "Save successful"
         p "saved as '#{save_name}'"
       end
-    end
+    
   end
 
   def self.load(load_name)
     if File.exist? "saves/#{load_name}.json"
-      system "clear"
+      # system "clear"
       load_name = "saves/#{load_name}.json"
       load_file = File.read(load_name)
       board = Board.from_json(load_file)

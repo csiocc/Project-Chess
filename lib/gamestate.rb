@@ -36,18 +36,18 @@ module Game_states
       valid_figures = board.white_figures
     end
 
-    unless clickd_tile.empty? #if clicked outside of the board
-      if clickd_tile.figure.color == "white" && valid_figures.include?(clickd_tile.figure)
-        @selected_tile = clickd_tile
-        p "#{clickd_tile.figure.class} selected" if DEBUG
-        return {status: :select_target_tile_white}
-      elsif clickd_tile.figure.color == "black"
-        p "Wrong Color"
-        return {status: :white_turn} #return to self
-      end
-    else
+    if clickd_tile.empty?
       p "Empty tile clicked, chose a Figure!"
-      return {status: return_status} #return to self
+      return {status: return_status}
+    end
+
+    if clickd_tile.figure.color == "white" && valid_figures.include?(clickd_tile.figure)
+      @selected_tile = clickd_tile
+      p "#{clickd_tile.figure.class} selected" if DEBUG
+      return {status: :select_target_tile_white}
+    else
+      p "Wrong Color or invalid figure"
+      return {status: return_status}
     end
   end
 
@@ -144,18 +144,18 @@ module Game_states
       valid_figures = board.black_figures
     end
 
-    unless clickd_tile.empty? # if clicked outside of the board
-      if clickd_tile.figure.color == "black" && valid_figures.include?(clickd_tile.figure)
-        @selected_tile = clickd_tile
-        p "#{clickd_tile.figure.class} selected" if DEBUG
-        return {status: :select_target_tile_black}
-      elsif clickd_tile.figure.color == "white"
-        p "Wrong color"
-        return {status: :black_turn} # return to self
-      end
-    else
+    if clickd_tile.empty?
       p "Empty tile clicked"
-      return {status: return_status} # return to self
+      return {status: return_status}
+    end
+
+    if clickd_tile.figure.color == "black" && valid_figures.include?(clickd_tile.figure)
+      @selected_tile = clickd_tile
+      p "#{clickd_tile.figure.class} selected" if DEBUG
+      return {status: :select_target_tile_black}
+    else
+      p "Wrong color or invalid figure"
+      return {status: return_status}
     end
   end
 
@@ -251,7 +251,7 @@ module Game_states
       return {status: (color == "white" ? :white_turn : :black_turn), legal_moves: []}
     end
     
-    figures_to_check = (color == "white") ? board.white_figures : board.black_figures
+    figures_to_check = (color == "white") ? board.white_figures.dup : board.black_figures.dup
     enemy_color = (color == "white") ? "black" : "white"
 
     figures_to_check.each do |figure|
