@@ -9,8 +9,7 @@ module SaveGame
 
     file_path = "saves/#{save_name}.json"
 
-    # bis 7 Varianten prüfen
-    (0..8).each do |i|
+    (0..6).each do |i|
       new_save_name = i.zero? ? save_name : "#{save_name}#{i}"
       file_path = "saves/#{new_save_name}.json"
 
@@ -21,7 +20,7 @@ module SaveGame
     end
       
     File.rename 'saves/tempfile', "saves/#{save_name}.json"
-      if File.exist? "saves/#{save_name}.json" # checks if save_name allready exists and return successful if yes
+      if File.exist? "saves/#{save_name}.json" 
         p "Save successful"
         p "saved as '#{save_name}'"
       end
@@ -29,15 +28,18 @@ module SaveGame
   end
 
   def self.load(load_name)
-    if File.exist? "saves/#{load_name}.json"
-      # system "clear"
-      load_name = "saves/#{load_name}.json"
-      load_file = File.read(load_name)
-      board = Board.from_json(load_file)
-      p "successfully loaded"
+    file_to_load = "saves/#{load_name}.json"
+    if File.exist?(file_to_load)
+      load_file = File.read(file_to_load)
+      board, game_state = Board.from_json(load_file)
+      p "loaded:"
       p "#{load_name}"
-      return board
+      return [board, game_state]
     end
+  end
+
+  def self.get_save_files
+    Dir.glob('saves/*.json').map { |f| File.basename(f, ".json") }
   end
 
   def self.delete_save(del_name)

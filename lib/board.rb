@@ -372,6 +372,36 @@ class Board
     end
   end
 
+  def display_saves(save_files)
+    @buttons.each do |button|
+      button.update_text(nil)
+    end
+
+    save_files.first(7).each_with_index do |file_name, index|
+      @buttons[index].update_text(file_name)
+    end
+    @buttons[7].update_text("Back")
+  end
+
+  def reset_button_texts
+    @buttons.each do |button|
+      button.text_object.remove if button.text_object
+    end
+
+    texts = {
+      [0, 0] => "Start",
+      [0, 1] => "Reset",
+      [1, 0] => "Save",
+      [1, 1] => "Load",
+      [3, 1] => "Exit"
+    }
+    @buttons.each_with_index do |button, index|
+      row = index / 2
+      col = index % 2
+      button.update_text(texts[[row, col]])
+    end
+  end
+
   def promote_pawn(pawn, choice_class)
     tile = pawn.current_tile
     color = pawn.color
@@ -394,11 +424,6 @@ class Board
       @black_figures << new_figure
     end
     new_figure.setup(tile)
-  end
-
-  def add_button(value)
-    tile = first_free(@buttons)
-    tile.display_value = value
   end
 
   # Helpermethods #
@@ -478,7 +503,7 @@ class Board
       end
     end
     @save_game_state = data[:game_state].to_sym
-    [board, data[:game_state]]
+    board
   end
-
 end
+
