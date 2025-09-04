@@ -335,6 +335,53 @@ module Game_states
     end
   end
 
+  #when :select_save_to_del
+  def select_save_to_del(clicked_button, board)
+    game_state = nil
+    if clicked_button
+      p "clicked button text is #{clicked_button.text}"
+      if clicked_button.text == "Back"
+        board.reset_button_texts
+        game_state = :menu
+      else 
+        SaveGame.delete_save(clicked_button.text) if clicked_button.text
+        clicked_button.text = nil
+        clicked_button.text_object.remove
+      end
+    end
+    game_state
+  end
+
+  #when :select_save_to_load
+  def select_save_to_load(clicked_button, board)
+    p "clicked button text: #{clicked_button.text}" if DEBUG
+      if clicked_button.text == "Back"
+        board.reset_button_texts
+        game_state = :menu
+      elsif clicked_button.text == "Delete"
+        p "delete clicked" if DEBUG
+        game_state = :select_save_to_del
+      elsif clicked_button.text           
+        game_state = :menu
+        loaded_data = SaveGame.load(clicked_button.text)
+        if loaded_data
+          test = loaded_data[0]
+          loaded_state = test.save_game_state
+          loaded_state = loaded_state[:status] if loaded_state.is_a?(Hash)
+          loaded_state = loaded_state.to_sym rescue nil if loaded_state.is_a?(String)
+          loaded_state = :white_turn unless [:white_turn, :black_turn, :promote_pawn, :menu,
+                                          :select_target_tile_white, :select_target_tile_black,
+                                          :check_white, :check_black].include?(loaded_state)
+          game_state = :menu                               
+          game_state = loaded_state
+          test.save_game_state = nil
+        end
+        p "reseting button texts" if DEBUG
+        board.reset_button_texts
+      end
+      game_state
+  end
+
   ### Helpermethods ###
 
   private
