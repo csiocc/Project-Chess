@@ -51,7 +51,7 @@ end
 
 update do
 
-  if @game_state == :select_save_to_load && !@saves_displayed
+  if (@game_state == :select_save_to_load || @game_state == :select_save_to_del) && !@saves_displayed
     save_files = SaveGame.get_save_files
     p "save files: #{save_files}" if DEBUG
     test.display_saves(save_files)
@@ -77,12 +77,12 @@ end
 # mouse events #
 on :mouse_down do |event|
   clickd_tile = test.find_tile({ x: event.x, y: event.y })
-  p "clicked tile is #{clickd_tile}" if DEBUG && clickd_tile
+  p "clicked tile is #{clickd_tile}" if DEBUG2 && clickd_tile
   p "current figure is #{clickd_tile.figure}" if DEBUG && clickd_tile
   clicked_button = test.find_button({ x: event.x, y: event.y }) 
   p "Gamestate: #{@game_state}" if DEBUG
   # Enter menu if a button is clicked, but not when already in the load menu
-  if clicked_button && @game_state != :select_save_to_load
+  if clicked_button && ![:select_save_to_load, :select_save_to_del].include?(@game_state)
     p "entering menu" if DEBUG
     @last_game_state = @game_state if @game_state != :menu
     @game_state = :menu
@@ -146,14 +146,17 @@ on :mouse_down do |event|
       end
     when :select_save_to_load
       if clicked_button
+        p "clicked button text: #{clicked_button.text}" if DEBUG
         if clicked_button.text == "Back"
           test.reset_button_texts
+          @game_state = :menu
+        elsif clicked_button.text == "Delete"
+          p "delete clicked" if DEBUG
+          @game_state = :select_save_to_del
         elsif clicked_button.text           
           @game_state = :menu
           loaded_data = SaveGame.load(clicked_button.text)
-          p "clicked button text: #{clicked_button.text}" if DEBUG
           if loaded_data
-            p "loaded data: #{loaded_data}" if DEBUG
             test = loaded_data[0]
             loaded_state = test.save_game_state
             loaded_state = loaded_state[:status] if loaded_state.is_a?(Hash)
@@ -169,6 +172,19 @@ on :mouse_down do |event|
           test.reset_button_texts
         end
         @saves_displayed = false
+      end
+    when :select_save_to_del
+      if clicked_button
+        p "clicked button text is #{clicked_button.text}"
+        if clicked_button.text == "Back"
+          test.reset_button_texts
+          @game_state = :menu
+          @saves_displayed = false
+        else 
+          SaveGame.delete_save(clicked_button.text)
+          clicked_button.text = nil
+          clicked_button.text_object.remove
+        end
       end
   end
 

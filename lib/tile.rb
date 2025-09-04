@@ -3,7 +3,7 @@ require_relative "config"
 require "ruby2d"
 
 class Tile
-  DEBUG = true
+  DEBUG = false
   attr_accessor :cords, :draw_cords, :figure, :en_passant_clone, :text, :text_object, :rectangle
 
   def initialize

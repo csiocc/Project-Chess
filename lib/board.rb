@@ -16,7 +16,7 @@ class Board
   include Config
   attr_reader  :grid, :tiles, :white_storage, :black_storage, :buttons
   attr_accessor :figures, :white_storage, :black_storage, :white_figures, :black_figures, :save_game_state
-  DEBUG = false
+  DEBUG = true
   DEBUG2 = false
   def initialize
     @grid = nil
@@ -377,10 +377,11 @@ class Board
       button.update_text(nil)
     end
 
-    save_files.first(7).each_with_index do |file_name, index|
+    save_files.first(6).each_with_index do |file_name, index|
       @buttons[index].update_text(file_name)
     end
     @buttons[7].update_text("Back")
+    @buttons[6].update_text("Delete")
   end
 
   def reset_button_texts

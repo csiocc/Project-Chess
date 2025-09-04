@@ -43,6 +43,7 @@ module SaveGame
   end
 
   def self.delete_save(del_name)
+    p "save deletesave triggered"
     File.delete("saves/#{del_name}.json")
     p "'#{del_name}' deleted."
   end
