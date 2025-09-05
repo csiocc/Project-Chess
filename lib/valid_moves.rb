@@ -16,30 +16,20 @@ module Valid_moves
     end
   end
 
-  def self.targets(figure, cords)
-    @targets.dig(figure, cords) || []
-  end
-
   def self.attacker_source(figure_key, target_cords)
-    # for king, rook, bishop, queen and knight its the same as "targets"
-    symetrical_figures = ["king", "rook", "bishop", "queen", "knight"]
-    if symetrical_figures.include?(figure_key)
-      return self.targets(figure_key, target_cords)
-    end
-
-    #pawn
+    target_cords = target_cords.is_a?(Array) ? target_cords : target_cords.cords
     r, c = target_cords
-    attacker_tiles = []
-    case figure_key
-    when "wptake" #where is a white pawn to attack te target?
-      attacker_tiles.push([r - 1, c - 1], [r - 1, c + 1]) # must be above target tile
-    when "bptake" #where is a black pawn to attack te target?
-      attacker_tiles.push([r + 1, c - 1], [r + 1, c + 1]) # must be below target tile
-    end
+    sym = %w[king rook bishop queen knight]
+    return self.targets(figure_key, target_cords) if sym.include?(figure_key)
 
-    #filter offboard clicked tiles
-    return self.valid(attacker_tiles)
+    attacker_tiles =
+      case figure_key
+      when "wptake" then [[r - 1, c - 1], [r - 1, c + 1]]
+      when "bptake" then [[r + 1, c - 1], [r + 1, c + 1]]
+      else []
+      end
 
+    self.valid(attacker_tiles) # filter off-board
   end
 
   def self.valid_moves(figure_class, current_cords)
@@ -84,29 +74,27 @@ module Valid_moves
 
   def self.los(current, target, board)
     figure = board.grid[current[0]][current[1]].figure
-    return true if figure.is_a?(King)
-    return true if figure.is_a?(Knight)
-    return true if figure.is_a?(Pawn)
+    return true if figure.is_a?(Pawn) || figure.is_a?(Knight) || figure.is_a?(King)
 
-    return false if current == target
-    directions = ["up", "down", "left", "right", "upleft", "upright", "downleft", "downright"]
-    path_to_check = nil
+    dy = target[0] - current[0]
+    dx = target[1] - current[1]
 
-    directions.each do |dir|
-      line = @targets.dig(dir, current)
-      next if line.nil?
-
-      if (target_index = line.index(target))
-        path_to_check = line[0...target_index]
-        break
-      end
+    unless dy == 0 || dx == 0 || dy.abs == dx.abs
+      return false
     end
 
-    return false if path_to_check.nil?
+    step_y = dy <=> 0
+    step_x = dx <=> 0
 
-    path_to_check.all? do |r, c|
-      board.grid[r][c].figure.nil?
+    current_y, current_x = current[0] + step_y, current[1] + step_x
+
+    while [current_y, current_x] != target
+      return false unless board.grid[current_y][current_x].figure.nil?
+      
+      current_y += step_y
+      current_x += step_x
     end
+    return true
   end
   
 
@@ -234,5 +222,14 @@ module Valid_moves
     [7, 4] => [[7, 2], [7, 6]]
   })
   end
-  
+
+  #Helpermethods
+
+private
+
+  def self.targets(figure, cords)
+    cords = cords.is_a?(Array) ? cords : cords.respond_to?(:cords) ? cords.cords : cords
+    list = @targets.dig(figure, cords) || []
+    list.map { |t| t.is_a?(Array) ? t : (t.respond_to?(:cords) ? t.cords : t) }
+  end
 end

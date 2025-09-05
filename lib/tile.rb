@@ -29,21 +29,37 @@ class Tile
     update_text(@text)
   end
 
-  def update_text(new_text)
-    @text_object.remove if @text_object
-    @text = new_text
-    if @text
-      @text_object = Text.new(
-        @text,
-        size: Config.text_size,
-        color: 'black',
-      )
-      text_cords = text_center_cords(@rectangle, @text_object.width, @text_object.height)
-      @text_object.x = text_cords[:x]
-      @text_object.y = text_cords[:y]
-      p "updated button text to: #{new_text}" if DEBUG
-    end
+def update_text(new_text)
+  @text_object.remove if @text_object
+
+  @text = (new_text.nil? ? "" : new_text.to_s)
+  return if @text.empty?
+
+  padding = Config.respond_to?(:button_text_padding) ? Config.button_text_padding : 8
+  inner_w = @rectangle.width  - padding * 2
+  inner_h = @rectangle.height - padding * 2
+  size     = Config.text_size
+  min_size = Config.respond_to?(:min_text_size) ? Config.min_text_size : 8
+
+
+  @text_object = Text.new(
+    @text,
+    size:  size,
+    color: 'black'
+  )
+
+  200.times do
+    break if (@text_object.width <= inner_w && @text_object.height <= inner_h) || size <= min_size
+    size -= 1
+    @text_object.size = size
   end
+  
+  text_cords = text_center_cords(@rectangle, @text_object.width, @text_object.height)
+  @text_object.x = text_cords[:x]
+  @text_object.y = text_cords[:y]
+
+  p "updated button text to: #{@text} (size=#{@text_object.size})" if defined?(DEBUG) && DEBUG
+end
 
   # Helpermethods#
   

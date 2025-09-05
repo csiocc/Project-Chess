@@ -29,17 +29,6 @@ class Figures
     return Valid_moves.valid_takes(figure_class, current_cords).include?(cords)
   end
 
-  def move_line_clear?(target_cords, board)
-    current_cords = @current_tile.cords
-
-    #Knights King and Pawns have never blocked path
-    return true if self.is_a?(Knight_white) || self.is_a?(Knight_black)
-    return true if self.is_a?(King_white) || self.is_a?(King_black)
-    return true if self.is_a?(Pawn_white) || self.is_a?(Pawn_black)
-    return true if Valid_moves.los(current_cords, target_cords, board)
-    false
-  end
-
   ### detects en_passant vulnerability ###
   def en_passant?(cords)
     current_cords = @current_tile.cords
@@ -131,6 +120,20 @@ class Figures
         p "illegal take"
       end
     end
+  end
+
+  def force_take(target, board) #to skip legal moves check for ai
+    figure = @current_tile.figure
+    current_tile = @current_tile
+    
+    current_tile.figure = nil
+    target_figure = target.figure
+    target.figure = figure
+    figure.current_tile = target
+    figure.first_move = false
+    figure.sprite.x = target.draw_cords[:x]
+    figure.sprite.y = target.draw_cords[:y]
+    move_to_storage(target_figure, board)
   end
 
   def move_to_storage(figure, board)

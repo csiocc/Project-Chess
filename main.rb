@@ -4,8 +4,10 @@ require_relative "lib/valid_moves"
 require_relative "lib/config"
 require_relative "lib/tile"
 require_relative "lib/highlight"
-require_relative "lib/check" ####### ONLY FOR TEST####
+require_relative "lib/check"
 require_relative "lib/save"
+require_relative "lib/ai"
+require_relative "lib/ai_runner"
 # display gem #
 require "ruby2d"
 ### modules ###
@@ -13,9 +15,9 @@ include Config
 include Valid_moves
 include Game_states
 include Highlight
-include Check  ####### ONLY FOR TEST####
+include Check 
 # debug option #
-DEBUG = true
+DEBUG = false
 DEBUG2 = false
 system 'clear'
 
@@ -26,9 +28,7 @@ set height: Config.window_size
 
 # setup playboard #
 test = Board.new
-
 Valid_moves.build_targets
-
 
 # game state variables #
 @game_state = :menu
@@ -36,21 +36,17 @@ Valid_moves.build_targets
 @last_game_state = nil
 @saves_displayed = false
 
+
 # key events #
 on :key_down do |event|
   case event.key
   when 'escape'
     close
-  when "r"
-    test = nil
-    test = Board.new
-    test.setup_figures
-    @game_state = :menu
   end
 end
 
+#update loop#
 update do
-
   if (@game_state == :select_save_to_load || @game_state == :select_save_to_del) && !@saves_displayed
     save_files = SaveGame.get_save_files
     p "save files: #{save_files}" if DEBUG
@@ -72,6 +68,7 @@ update do
       @last_displayed_turn = :black
     end
   end
+  @game_state = AiRunner.tick!(test, @game_state)
 end
 
 # mouse events #
@@ -80,6 +77,11 @@ on :mouse_down do |event|
   p "clicked tile is #{clickd_tile}" if DEBUG2 && clickd_tile
   p "current figure is #{clickd_tile.figure}" if DEBUG && clickd_tile
   clicked_button = test.find_button({ x: event.x, y: event.y }) 
+
+  if AiRunner.ai_controls_turn?(@game_state) && !clicked_button
+    next
+  end
+
   p "Gamestate: #{@game_state}" if DEBUG
   # Enter menu if a button is clicked, but not when already in the load menu
   if clicked_button && ![:select_save_to_load, :select_save_to_del].include?(@game_state)
@@ -119,12 +121,15 @@ on :mouse_down do |event|
       puts "White wins!"
     when :check_mate_white
       puts "Black wins!"
+    when :stale_mate
+      puts "Stalemate!"
     when :menu
       if clicked_button
         case clicked_button.text
         when "Reset"
           puts "Reset"
           test = Board.new
+          AiRunner.reset!
           @game_state = :menu
         when "Start"
           puts "Start"
@@ -138,6 +143,16 @@ on :mouse_down do |event|
         when "Load"
           @game_state = :select_save_to_load
           @saves_displayed = false
+        when /^AI White: (ON|OFF)$/
+          current_on = Regexp.last_match(1) == "ON"
+          new_on = !current_on
+          AiRunner.set_ai_for(:white, new_on)
+          clicked_button.update_text("AI White: #{new_on ? 'ON' : 'OFF'}")
+        when /^AI Black: (ON|OFF)$/
+          current_on = Regexp.last_match(1) == "ON"
+          new_on = !current_on
+          AiRunner.set_ai_for(:black, new_on)
+          clicked_button.update_text("AI Black: #{new_on ? 'ON' : 'OFF'}")
         end
       else
         # If clicked outside buttons in menu, return to last game state

@@ -5,6 +5,7 @@ module Config
   @BORDER = (@ADD_WIDTH / 64)
   @TEXT_SIZE = (@WINDOW_SIZE / 36)
   @CONSOLE_TEXT_SIZE = (@WINDOW_SIZE / 45)
+  @TEXT_PADDING = 2
 
   #getter methods to access data
   def self.window_size 
@@ -18,6 +19,11 @@ module Config
   def self.text_size
     @TEXT_SIZE
   end
+
+  def self.text_padding
+    @TEXT_PADDING
+  end
+
 
   def self.window_width
     @WINDOW_SIZE + @ADD_WIDTH

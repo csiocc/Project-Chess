@@ -16,7 +16,7 @@ class Board
   include Config
   attr_reader  :grid, :tiles, :white_storage, :black_storage, :buttons
   attr_accessor :figures, :white_storage, :black_storage, :white_figures, :black_figures, :save_game_state
-  DEBUG = true
+  DEBUG = false
   DEBUG2 = false
   def initialize
     @grid = nil
@@ -96,7 +96,9 @@ class Board
     @tiles << display_bot_tile
   end
 
-  def setup_display_buttons
+  def setup_display_buttons  #lib/tile -> add // update_text(new_text)
+    ai_white_label = "AI White: #{AiRunner.ai_controls_turn?(:white_turn) ? 'ON' : 'OFF'}"
+    ai_black_label = "AI Black: #{AiRunner.ai_controls_turn?(:black_turn) ? 'ON' : 'OFF'}"
     4.times do |row|
       2.times do |col|
         button = Tile.new
@@ -120,18 +122,16 @@ class Board
           button.text = "Load"
         when [3, 1]
           button.text = "Exit"
+        when [2, 0]
+          button.text = "#{ai_white_label}"
+        when [2, 1]
+          button.text = "#{ai_black_label}"
         end
         p "Button at row=#{row}, col=#{col} text=#{button.text} cords: #{button.draw_cords}" if DEBUG
         @buttons << button
       end
     end
   end
-
-
-
-
-
-
 
   def draw_board
     tile_size = Config.tile_size
@@ -286,29 +286,33 @@ class Board
     self.setup_figures
   end
 
-  def en_passant_reset_black
-    @grid.each do |row|
-      row.each do |tile|
-        if tile.en_passant_clone && tile.figure.color == "black" && tile.figure.is_a?(Pawn)
-          p "called en_passant_reset_black on #{tile.cords} and deleted #{tile.figure}" if DEBUG
-          tile.en_passant_clone = false
-          tile.figure = nil
-        end
+def en_passant_reset_black
+  grid.each do |row|
+    row.each do |tile|
+      if tile.respond_to?(:en_passant_clone) && tile.en_passant_clone
+        tile.en_passant_clone = false
       end
-    end
-  end
+      fig = tile.figure
+      next unless fig&.is_a?(Pawn) && fig.color == "black"
 
-  def en_passant_reset_white
-    @grid.each do |row|
-      row.each do |tile|
-        if tile.en_passant_clone && tile.figure.color == "white" && tile.figure.is_a?(Pawn)
-          p "called en_passant_reset_white on #{tile.cords} and deleted #{tile.figure}" if DEBUG
-          tile.en_passant_clone = false
-          tile.figure = nil
-        end
-      end
+      fig.en_passant = false
     end
   end
+end
+
+def en_passant_reset_white
+  grid.each do |row|
+    row.each do |tile|
+      if tile.respond_to?(:en_passant_clone) && tile.en_passant_clone
+        tile.en_passant_clone = false
+      end
+      fig = tile.figure
+      next unless fig&.is_a?(Pawn) && fig.color == "white"
+
+      fig.en_passant = false
+    end
+  end
+end
 
   def white_king_pos
     @figures.each do |figure|

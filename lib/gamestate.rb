@@ -168,12 +168,8 @@ module Game_states
     figure = @selected_tile.figure
     current_cords = @selected_tile.cords
     target_cords = clickd_tile.cords
-
-
     is_valid_move = false
     is_capture = !clickd_tile.empty?
-
-
 
     #castle rule
     if figure.is_a?(King) && Valid_moves.valid_castle(figure.class, figure.current_tile.cords).include?(target_cords)
@@ -335,6 +331,10 @@ module Game_states
     end
   end
 
+  def self.auto_promote_to_queen!(board, target, color_str)
+    handle_promotion(target, board)
+  end
+
   #when :select_save_to_del
   def select_save_to_del(clicked_button, board)
     game_state = nil
@@ -381,6 +381,8 @@ module Game_states
       end
       game_state
   end
+
+
 
   ### Helpermethods ###
 
