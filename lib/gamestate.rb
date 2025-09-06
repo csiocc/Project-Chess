@@ -126,7 +126,7 @@ module Game_states
     end
 
     
-    Game_states.reset_en_passant_black(board)
+    reset_en_passant_black(board)
     return check_status("black", board)
   end
 
@@ -233,7 +233,7 @@ module Game_states
     end
 
     
-    Game_states.reset_en_passant_white(board)
+    reset_en_passant_white(board)
     return check_status("white", board)
   end
 

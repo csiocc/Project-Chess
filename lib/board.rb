@@ -289,8 +289,10 @@ class Board
 def en_passant_reset_black
   grid.each do |row|
     row.each do |tile|
-      if tile.respond_to?(:en_passant_clone) && tile.en_passant_clone
+      if tile.en_passant_clone == true && tile.figure.color == "black"
+        p "Clone on #{tile.cords} deleted"
         tile.en_passant_clone = false
+        tile.figure = nil
       end
       fig = tile.figure
       next unless fig&.is_a?(Pawn) && fig.color == "black"
@@ -303,12 +305,13 @@ end
 def en_passant_reset_white
   grid.each do |row|
     row.each do |tile|
-      if tile.respond_to?(:en_passant_clone) && tile.en_passant_clone
+      if tile.en_passant_clone == true && tile.figure.color == "white"
+        p "Clone on #{tile.cords} deleted"
         tile.en_passant_clone = false
+        tile.figure = nil
       end
       fig = tile.figure
       next unless fig&.is_a?(Pawn) && fig.color == "white"
-
       fig.en_passant = false
     end
   end

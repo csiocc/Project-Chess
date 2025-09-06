@@ -14,10 +14,6 @@ module Ai
     king:     0
   }.freeze
 
-  # ---------------------------
-  # Public API
-  # ---------------------------
-
   # color: "white" | "black"
   def self.best_move(board, color = "black", depth: 3, time_limit_ms: nil)
     alpha      = -Float::INFINITY
@@ -43,13 +39,13 @@ module Ai
           best_score = score
           best = m
         end
-        alpha = [alpha, best_score].max  # Root-α monoton
+        alpha = [alpha, score].max  # Root-α monoton
       else
         if score < best_score
           best_score = score
           best = m
         end
-        beta  = [beta,  best_score].min  # Root-β monoton
+        beta  = [beta,  score].min  # Root-β monoton
       end
 
       break if alpha >= beta
@@ -60,7 +56,7 @@ module Ai
 
   def self.make_move!(board, move)
     fig         = move[:figure]
-    from_r,from_c = to_rc(move[:from])
+    from_r, from_c = to_rc(move[:from])
     to_r, to_c  = to_rc(move[:to])
     to_tile     = board.grid[to_r][to_c]
 
@@ -85,7 +81,6 @@ module Ai
     board.grid.each do |row|
       row.each do |tile|
         tile.en_passant_clone = false if tile.respond_to?(:en_passant_clone=)
-        tile.en_passant_color = nil   if tile.respond_to?(:en_passant_color=)
       end
     end
     board.figures.each do |f|

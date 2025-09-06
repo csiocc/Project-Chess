@@ -8,8 +8,8 @@ module AiRunner
   class << self
     # interne Zustände
     def reset!
-      @ai_for           = { white: true,  black: true }   # KI vs. KI default
-      @depth            = { white: 6,     black: 3 }
+      @ai_for           = { white: false,  black: false }   # P v P as standard
+      @depth            = { white: 3,     black: 3 }
       @time_ms          = { white: 600,   black: 600 }
       @move_delay_ms    = 250
       @busy             = false

@@ -1,0 +1,268 @@
+{
+  "game_state": "white_turn",
+  "figures": [
+    {
+      "type": "Pawn_white",
+      "cords": [
+        1,
+        0
+      ],
+      "first_move": true,
+      "en_passant": false
+    },
+    {
+      "type": "Pawn_white",
+      "cords": [
+        1,
+        1
+      ],
+      "first_move": true,
+      "en_passant": false
+    },
+    {
+      "type": "Pawn_white",
+      "cords": [
+        1,
+        2
+      ],
+      "first_move": true,
+      "en_passant": false
+    },
+    {
+      "type": "Pawn_white",
+      "cords": [
+        3,
+        4
+      ],
+      "first_move": false,
+      "en_passant": false
+    },
+    {
+      "type": "Pawn_white",
+      "cords": [
+        1,
+        5
+      ],
+      "first_move": true,
+      "en_passant": false
+    },
+    {
+      "type": "Pawn_white",
+      "cords": [
+        1,
+        6
+      ],
+      "first_move": true,
+      "en_passant": false
+    },
+    {
+      "type": "Pawn_white",
+      "cords": [
+        1,
+        7
+      ],
+      "first_move": true,
+      "en_passant": false
+    },
+    {
+      "type": "Pawn_black",
+      "cords": [
+        6,
+        0
+      ],
+      "first_move": true,
+      "en_passant": false
+    },
+    {
+      "type": "Pawn_black",
+      "cords": [
+        6,
+        1
+      ],
+      "first_move": true,
+      "en_passant": false
+    },
+    {
+      "type": "Pawn_black",
+      "cords": [
+        6,
+        2
+      ],
+      "first_move": true,
+      "en_passant": false
+    },
+    {
+      "type": "Pawn_black",
+      "cords": [
+        6,
+        3
+      ],
+      "first_move": true,
+      "en_passant": false
+    },
+    {
+      "type": "Pawn_black",
+      "cords": [
+        3,
+        3
+      ],
+      "first_move": false,
+      "en_passant": false
+    },
+    {
+      "type": "Pawn_black",
+      "cords": [
+        6,
+        5
+      ],
+      "first_move": true,
+      "en_passant": false
+    },
+    {
+      "type": "Pawn_black",
+      "cords": [
+        6,
+        6
+      ],
+      "first_move": true,
+      "en_passant": false
+    },
+    {
+      "type": "Pawn_black",
+      "cords": [
+        6,
+        7
+      ],
+      "first_move": true,
+      "en_passant": false
+    },
+    {
+      "type": "Rook_white",
+      "cords": [
+        0,
+        0
+      ],
+      "first_move": true
+    },
+    {
+      "type": "Rook_white",
+      "cords": [
+        0,
+        7
+      ],
+      "first_move": true
+    },
+    {
+      "type": "Rook_black",
+      "cords": [
+        7,
+        0
+      ],
+      "first_move": true
+    },
+    {
+      "type": "Rook_black",
+      "cords": [
+        7,
+        7
+      ],
+      "first_move": true
+    },
+    {
+      "type": "Knight_white",
+      "cords": [
+        0,
+        1
+      ],
+      "first_move": true
+    },
+    {
+      "type": "Knight_white",
+      "cords": [
+        0,
+        6
+      ],
+      "first_move": true
+    },
+    {
+      "type": "Knight_black",
+      "cords": [
+        7,
+        1
+      ],
+      "first_move": true
+    },
+    {
+      "type": "Knight_black",
+      "cords": [
+        7,
+        6
+      ],
+      "first_move": true
+    },
+    {
+      "type": "Bishop_white",
+      "cords": [
+        0,
+        2
+      ],
+      "first_move": true
+    },
+    {
+      "type": "Bishop_white",
+      "cords": [
+        0,
+        5
+      ],
+      "first_move": true
+    },
+    {
+      "type": "Bishop_black",
+      "cords": [
+        7,
+        2
+      ],
+      "first_move": true
+    },
+    {
+      "type": "Bishop_black",
+      "cords": [
+        7,
+        5
+      ],
+      "first_move": true
+    },
+    {
+      "type": "Queen_white",
+      "cords": [
+        0,
+        3
+      ],
+      "first_move": true
+    },
+    {
+      "type": "Queen_black",
+      "cords": [
+        7,
+        3
+      ],
+      "first_move": true
+    },
+    {
+      "type": "King_white",
+      "cords": [
+        0,
+        4
+      ],
+      "first_move": true
+    },
+    {
+      "type": "King_black",
+      "cords": [
+        7,
+        4
+      ],
+      "first_move": true
+    }
+  ]
+}
