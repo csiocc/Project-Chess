@@ -1,5 +1,5 @@
-require_relative "gamestate"
-require_relative "config"
+require_relative "../gamelogic/gamestate"
+require_relative "../config"
 
 module Highlight
   include Config

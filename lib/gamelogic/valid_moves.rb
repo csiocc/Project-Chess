@@ -97,7 +97,6 @@ module Valid_moves
     return true
   end
   
-
   def self.build_targets
     @positions = (0...8).flat_map { |r| (0...8).map { |c| [r, c] } }
     @targets = {}

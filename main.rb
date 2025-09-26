@@ -1,13 +1,12 @@
-require_relative "lib/board"
-require_relative "lib/gamestate"
-require_relative "lib/valid_moves"
+require_relative "lib/Board/board"
+require_relative "lib/gamelogic/gamestate"
+require_relative "lib/gamelogic/valid_moves"
 require_relative "lib/config"
-require_relative "lib/tile"
-require_relative "lib/highlight"
-require_relative "lib/check"
-require_relative "lib/save"
-require_relative "lib/ai"
-require_relative "lib/ai_runner"
+require_relative "lib/Board/highlight"
+require_relative "lib/gamelogic/check"
+require_relative "lib/gamelogic/save"
+require_relative "lib/ai/ai"
+require_relative "lib/ai/ai_runner"
 # display gem #
 require "ruby2d"
 ### modules ###
@@ -19,6 +18,7 @@ include Check
 # debug option #
 DEBUG = false
 DEBUG2 = false
+DEBUG_SHOW_MOVES = false
 system 'clear'
 
 # setup display window #
@@ -77,6 +77,14 @@ on :mouse_down do |event|
   p "clicked tile is #{clickd_tile}" if DEBUG2 && clickd_tile
   p "current figure is #{clickd_tile.figure}" if DEBUG && clickd_tile
   clicked_button = test.find_button({ x: event.x, y: event.y }) 
+
+  # --- Debug-Ausgabe für alle möglichen Züge ---
+  if DEBUG_SHOW_MOVES && clickd_tile && clickd_tile.figure
+    puts "--- DEBUG: Mögliche Züge für #{clickd_tile.figure.class.name} auf #{clickd_tile.cords} ---"
+    possible_moves = Valid_moves.valid_moves(clickd_tile.figure.class, clickd_tile.cords)
+    puts "Mögliche Zielkoordinaten: #{possible_moves.inspect}"
+    puts "----------------------------------------------------"
+  end
 
   if AiRunner.ai_controls_turn?(@game_state) && !clicked_button
     next

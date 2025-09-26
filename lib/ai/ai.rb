@@ -1,7 +1,7 @@
-require_relative "board"
-require_relative "valid_moves"
-require_relative "config"
-require_relative "check"
+require_relative "../Board/board"
+require_relative "../gamelogic/valid_moves"
+require_relative "../config"
+require_relative "../gamelogic/check"
 
 module Ai
   DEBUG = false

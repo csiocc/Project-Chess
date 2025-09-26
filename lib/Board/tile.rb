@@ -1,5 +1,5 @@
 ### tiles on the board ###
-require_relative "config"
+require_relative "../config"
 require "ruby2d"
 
 class Tile

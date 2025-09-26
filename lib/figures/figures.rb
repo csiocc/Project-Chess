@@ -1,4 +1,4 @@
-require_relative "valid_moves"
+require_relative "../gamelogic/valid_moves"
 #class for all figures for shared functions
 
 

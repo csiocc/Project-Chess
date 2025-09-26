@@ -1,14 +1,14 @@
 
 require_relative "tile"
-require_relative "pawn"
-require_relative "rook"
-require_relative "knight"
-require_relative "bishop"
-require_relative "queen"
-require_relative "king"
-require_relative "config"
-require_relative "valid_moves"
-require_relative "display_logger"
+require_relative "../figures/pawn"
+require_relative "../figures/rook"
+require_relative "../figures/knight"
+require_relative "../figures/bishop"
+require_relative "../figures/queen"
+require_relative "../figures/king"
+require_relative "../config"
+require_relative "../gamelogic/valid_moves"
+require_relative "../Board/display_logger"
 require "ruby2d"
 
 ###Board Class creating the Board and storing Tiles and functions to access them###
@@ -514,4 +514,3 @@ end
     board
   end
 end
-

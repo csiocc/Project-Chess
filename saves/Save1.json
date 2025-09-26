@@ -1,5 +1,5 @@
 {
-  "game_state": "white_turn",
+  "game_state": "black_turn",
   "figures": [
     {
       "type": "Pawn_white",
@@ -31,19 +31,28 @@
     {
       "type": "Pawn_white",
       "cords": [
-        3,
-        4
+        1,
+        3
       ],
-      "first_move": false,
+      "first_move": true,
       "en_passant": false
     },
     {
       "type": "Pawn_white",
       "cords": [
         1,
-        5
+        4
       ],
       "first_move": true,
+      "en_passant": false
+    },
+    {
+      "type": "Pawn_white",
+      "cords": [
+        3,
+        5
+      ],
+      "first_move": false,
       "en_passant": false
     },
     {
@@ -103,10 +112,10 @@
     {
       "type": "Pawn_black",
       "cords": [
-        3,
-        3
+        6,
+        4
       ],
-      "first_move": false,
+      "first_move": true,
       "en_passant": false
     },
     {

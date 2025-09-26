@@ -1,6 +1,6 @@
 require_relative "board"
 require_relative "tile"
-require_relative "config"
+require_relative "../config"
 
 
 

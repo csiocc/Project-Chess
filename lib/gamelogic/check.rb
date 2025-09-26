@@ -1,4 +1,4 @@
-require_relative "figures"
+require_relative "../figures/figures"
 require_relative "valid_moves"
 
 module Check
